@@ -10,7 +10,8 @@
     "test": "jest --watchAll",
     "format": "prettier --write ./** ",
     "lint": "eslint .",
-    "lint-fix": "eslint ."
+    "lint-fix": "eslint .",
+    "precommit": "lint-staged"
   },
   "jest": {
     "preset": "jest-expo"
