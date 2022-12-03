@@ -34,6 +34,7 @@ module.exports = {
     'import/no-cycle': 'off',
     'react/no-unescaped-entities':'off',
     '@typescript-eslint/no-unused-vars': 'error',
+    "no-param-reassign": 0,
   },
   settings: {
     react: {
