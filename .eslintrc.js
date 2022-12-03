@@ -14,6 +14,9 @@ module.exports = {
   ],
   parserOptions: {
     project: './tsconfig.json',
+    ecmaFeatures: {
+       "jsx": true
+    } 
   },
   plugins: ['react', 'react-hooks', '@typescript-eslint'],
   rules: {
@@ -22,7 +25,15 @@ module.exports = {
     'no-empty-function': 'off',
     '@typescript-eslint/no-empty-function': 'off',
     'react/display-name': 'off',
+    'react/jsx-indent': 'off',
     'react/prop-types': 'off',
+        "no-shadow": "off",
+    "@typescript-eslint/no-shadow": "error",
+    "import/extensions": [0],
+    "camelcase": "off",
+    'import/no-cycle': 'off',
+    'react/no-unescaped-entities':'off',
+    '@typescript-eslint/no-unused-vars': 'error',
   },
   settings: {
     react: {
