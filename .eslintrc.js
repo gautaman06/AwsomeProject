@@ -2,7 +2,10 @@ module.exports = {
   env: {
     es6: true,
     node: true,
-    jest: true,
+		jest: true,
+	browser: true,
+		es2021: true,
+	
   },
   extends: [
     'eslint:recommended',
@@ -35,6 +38,7 @@ module.exports = {
     'react/no-unescaped-entities':'off',
     '@typescript-eslint/no-unused-vars': 'error',
     "no-param-reassign": 0,
+    "@typescript-eslint/no-floating-promises":'off'
   },
   settings: {
     react: {
