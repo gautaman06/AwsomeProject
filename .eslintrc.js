@@ -38,7 +38,9 @@ module.exports = {
     'react/no-unescaped-entities':'off',
     '@typescript-eslint/no-unused-vars': 'error',
     "no-param-reassign": 0,
-    "@typescript-eslint/no-floating-promises":'off'
+    "@typescript-eslint/no-floating-promises": 'off',
+    "@typescript-eslint/no-namespace": 'off',
+    '@typescript-eslint/no-empty-interface':'off'
   },
   settings: {
     react: {
