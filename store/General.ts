@@ -1,14 +1,16 @@
-import { action, observable } from 'mobx';
+import { action, makeObservable, observable } from 'mobx';
 
 class GeneralStore {
-  @observable public theme: string = 'light';
+  @observable public text = '';
 
-  constructor() {}
+  constructor() {
+    makeObservable(this);
+  }
 
   @action.bound
-  public setListArray(value: string): void {
-    this.theme = value;
+  public setText(value: string): void {
+    this.text = value;
   }
 }
-
-export default GeneralStore;
+const observableGeneralStore = new GeneralStore();
+export default observableGeneralStore;
