@@ -1,12 +1,14 @@
 const tintColorLight = '#2f95dc';
 const tintColorDark = '#fff';
 
+/* Exporting the colors to be used in the app. */
 export const white = '#fff';
 export const black = '#000';
 export const blue = '#3E73FB';
 export const red = '#FB4A4A';
 
 export default {
+  /* Setting the color scheme for the light theme. */
   light: {
     text: black,
     background: white,
@@ -24,6 +26,7 @@ export default {
     dangerButtonTextColor: red,
     dangerButtonBorderColor: red,
   },
+  /* Setting the color scheme for the dark theme. */
   dark: {
     text: white,
     background: black,
