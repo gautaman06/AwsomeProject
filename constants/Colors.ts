@@ -3,6 +3,8 @@ const tintColorDark = '#fff';
 
 export const white = '#fff';
 export const black = '#000';
+export const blue = '#3E73FB';
+export const red = '#FB4A4A';
 
 export default {
   light: {
@@ -15,6 +17,12 @@ export default {
     borderTopColor: white,
     borderLeftColor: white,
     borderRightColor: white,
+    buttonColor: white,
+    buttonTextColor: blue,
+    buttonBorderColor: blue,
+    dangerButtonColor: white,
+    dangerButtonTextColor: red,
+    dangerButtonBorderColor: red,
   },
   dark: {
     text: white,
@@ -26,5 +34,11 @@ export default {
     borderTopColor: black,
     borderLeftColor: black,
     borderRightColor: black,
+    buttonColor: blue,
+    buttonTextColor: white,
+    buttonBorderColor: blue,
+    dangerButtonColor: red,
+    dangerButtonTextColor: white,
+    dangerButtonBorderColor: red,
   },
 };
