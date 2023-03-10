@@ -4,7 +4,14 @@
  */
 
 import React from 'react';
-import { Text as DefaultText, View as DefaultView, TextInput as DefaultTextInput } from 'react-native';
+import {
+  Text as DefaultText,
+  View as DefaultView,
+  TextInput as DefaultTextInput,
+  Button as DefaultButton,
+  StyleSheet,
+  TouchableOpacity,
+} from 'react-native';
 
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
@@ -31,15 +38,16 @@ type ThemeProps = {
 export type TextProps = ThemeProps & DefaultText['props'];
 export type ViewProps = ThemeProps & DefaultView['props'];
 export type TextInputProps = ThemeProps & DefaultTextInput['props'];
+export type ButtonProps = ThemeProps & DefaultButton['props'] & { isDanger?: boolean; containerStyle? };
 
-export function Text(props: TextProps) {
+export const Text = (props: TextProps) => {
   const { style, lightColor, darkColor, ...otherProps } = props;
   const color = useThemeColor({ light: lightColor, dark: darkColor }, 'text');
 
   return <DefaultText style={[{ color }, style]} {...otherProps} />;
-}
+};
 
-export function TextInput(props: TextInputProps) {
+export const TextInput = (props: TextInputProps) => {
   const { style, lightColor, darkColor, ...otherProps } = props;
   const color = useThemeColor({ light: lightColor, dark: darkColor }, 'text');
   const borderBottomColor = useThemeColor({ light: lightColor, dark: darkColor }, 'borderBottomColor');
@@ -53,11 +61,64 @@ export function TextInput(props: TextInputProps) {
       {...otherProps}
     />
   );
-}
+};
 
-export function View(props: ViewProps) {
+export const View = (props: ViewProps) => {
   const { style, lightColor, darkColor, ...otherProps } = props;
   const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, 'background');
 
   return <DefaultView style={[{ backgroundColor }, style]} {...otherProps} />;
-}
+};
+
+export const Button = (props: ButtonProps) => {
+  const { lightColor, darkColor, isDanger, title, onPress, containerStyle } = props;
+  const backgroundColor = useThemeColor(
+    { light: lightColor, dark: darkColor },
+    isDanger ? 'dangerButtonColor' : 'buttonColor',
+  );
+  const textColor = useThemeColor(
+    { light: lightColor, dark: darkColor },
+    isDanger ? 'dangerButtonTextColor' : 'buttonTextColor',
+  );
+
+  const borderColor = useThemeColor(
+    { light: lightColor, dark: darkColor },
+    isDanger ? 'dangerButtonBorderColor' : 'buttonBorderColor',
+  );
+
+  const buttonStyles = Object.assign({}, styles, {
+    container: {
+      ...styles.container,
+      ...containerStyle,
+      borderColor: borderColor,
+      backgroundColor: backgroundColor,
+    },
+    title: {
+      ...styles.title,
+      color: textColor,
+    },
+  });
+
+  return (
+    <TouchableOpacity style={buttonStyles.container} onPress={onPress}>
+      <Text style={buttonStyles.title}> {title} </Text>
+    </TouchableOpacity>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    borderRadius: 3,
+    borderColor: '#512DA8',
+    borderWidth: 1,
+    backgroundColor: '#512DA8',
+    width: 80,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  title: {
+    color: '#fff',
+    fontSize: 16,
+  },
+});
