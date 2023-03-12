@@ -1,6 +1,7 @@
 import { observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
 import { Alert, SafeAreaView, StyleSheet } from 'react-native';
+import { ModalContent, BottomModal, ModalTitle } from 'react-native-modals';
 
 // import EditScreenInfo from '../components/EditScreenInfo';
 import { Text, View, TextInput, Button } from '../components/Themed';
@@ -8,6 +9,7 @@ import GeneralStore from '../store/General';
 
 export const TabTwoScreen = (): JSX.Element => {
   const [number, onChangeNumber] = useState('');
+  const [visisble, setIsvisible] = useState(false);
 
   const { setText, text } = GeneralStore;
 
@@ -32,13 +34,30 @@ export const TabTwoScreen = (): JSX.Element => {
           value={text}
           placeholder="Placeholder"
         />
-        <Button containerStyle={styles.button} title="Save" onPress={() => Alert.alert('Save button pressed')} />
+        <Button containerStyle={styles.button} title="Save" onPress={() => setIsvisible(true)} />
         <Button
           containerStyle={styles.button}
           title="Cancel"
           isDanger
           onPress={() => Alert.alert('Cancel button pressed')}
         />
+        <BottomModal
+          visible={visisble}
+          onTouchOutside={() => setIsvisible(false)}
+          height={0.5}
+          width={1}
+          onSwipeOut={() => setIsvisible(false)}
+          modalTitle={<ModalTitle title="Bottom Modal" hasTitleBar />}
+        >
+          <ModalContent
+            style={{
+              flex: 1,
+              backgroundColor: 'fff',
+            }}
+          >
+            <Text style={styles.title}>Examples : Store text - {text}</Text>
+          </ModalContent>
+        </BottomModal>
       </SafeAreaView>
     </View>
   );

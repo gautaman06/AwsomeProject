@@ -2,11 +2,12 @@ import React from 'react';
 import { StyleSheet } from 'react-native';
 
 import EditScreenInfo from '../components/EditScreenInfo';
-import { Text, View } from '../components/Themed';
+import { Button, Text, View } from '../components/Themed';
 import GeneralStore from '../store/General';
 import { observer } from 'mobx-react';
+import { RootTabScreenProps } from '../types';
 
-export const HomeScreen = (): JSX.Element => {
+export const HomeScreen = ({ navigation }: RootTabScreenProps<'Home'>): JSX.Element => {
   const { text } = GeneralStore;
   return (
     <View style={styles.container}>
@@ -14,6 +15,7 @@ export const HomeScreen = (): JSX.Element => {
       <Text style={styles.title}>Home</Text>
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
       <EditScreenInfo path="/screens/HomeScreen.tsx" />
+      <Button title="Expenses" onPress={() => navigation.navigate('Expenses')} />
     </View>
   );
 };
