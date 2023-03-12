@@ -1,6 +1,6 @@
 import React from 'react';
 import { Animated, StatusBar, StyleSheet, TouchableOpacity } from 'react-native';
-import { NavigationState, SceneRendererProps, TabView } from 'react-native-tab-view';
+import { NavigationState, Route, SceneRendererProps, TabView } from 'react-native-tab-view';
 import { View } from './Themed';
 
 interface ITabViewComponent {
@@ -25,15 +25,11 @@ interface ITabViewComponent {
 
 const TabViewComponent = (props: ITabViewComponent) => {
   const { setIsTabState, tabState, renderScene } = props;
-  const handleChange = (index) => {
+  const handleChange = (index: number) => {
     setIsTabState({ ...tabState, index: index });
   };
 
-  const renderTabs = (
-    renderTabsProps: SceneRendererProps & {
-      navigationState: NavigationState<any>;
-    },
-  ) => {
+  const renderTabs = (renderTabsProps: SceneRendererProps & { navigationState: NavigationState<Route> }) => {
     const inputRange = renderTabsProps.navigationState.routes.map((x, i) => i);
 
     return (
@@ -46,7 +42,7 @@ const TabViewComponent = (props: ITabViewComponent) => {
 
           return (
             <TouchableOpacity key={i} style={styles.tabItem} onPress={() => setIsTabState({ ...tabState, index: i })}>
-              <Animated.Text style={{ opacity }}>{route.title}</Animated.Text>
+              <Animated.Text style={{ opacity }}>{route?.title}</Animated.Text>
             </TouchableOpacity>
           );
         })}
