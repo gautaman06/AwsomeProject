@@ -38,7 +38,7 @@ function RootNavigator() {
         <Stack.Screen name="Modal" component={ModalScreen} />
       </Stack.Group>
       <Stack.Group screenOptions={{ presentation: 'modal' }}>
-        <Stack.Screen name="Expenses" component={Expenses} />
+        <Stack.Screen name="Expenses" component={Expenses} options={{ headerShown: false }} />
       </Stack.Group>
     </Stack.Navigator>
   );
