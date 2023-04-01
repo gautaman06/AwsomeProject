@@ -45,3 +45,19 @@ export default {
     dangerButtonBorderColor: red,
   },
 };
+
+/* This is a constant that is used to set the colors for the expense list card. */
+export const EXPENSELISTCARD_COLORS = {
+  LENT: {
+    background: '#A1E396',
+    color: '#0D8B21',
+  },
+  NOT_INVOLVED: {
+    background: '#A599F0',
+    color: '#5D6BE9',
+  },
+  BORROWED: {
+    background: '#EFC0F0',
+    color: '#B73161',
+  },
+};
