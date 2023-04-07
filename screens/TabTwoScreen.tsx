@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Alert, SafeAreaView, StyleSheet } from 'react-native';
 import { ModalContent, BottomModal, ModalTitle } from 'react-native-modals';
 import ExpenseListCard from '../components/ExpenseListCard';
+import { RadioButton } from '../components/Radio';
 
 // import EditScreenInfo from '../components/EditScreenInfo';
 import { Text, View, TextInput, Button } from '../components/Themed';
@@ -12,6 +13,7 @@ import observableGroupsStore from '../store/GroupsStore';
 export const TabTwoScreen = (): JSX.Element => {
   const [number, onChangeNumber] = useState('');
   const [visisble, setIsvisible] = useState(false);
+  const [selected, setSelected] = useState('');
 
   const { setText, text } = GeneralStore;
   const { setListArray } = observableGroupsStore;
@@ -20,6 +22,25 @@ export const TabTwoScreen = (): JSX.Element => {
     setText(number);
     setListArray();
   }, [number]);
+
+  const radioList = [
+    {
+      key: 'samsung',
+      label: 'Samsung',
+    },
+    {
+      key: 'apple',
+      label: 'Apple',
+    },
+    {
+      key: 'motorola',
+      label: 'Motorola',
+    },
+    {
+      key: 'lenovo',
+      label: 'Lenovo',
+    },
+  ];
 
   return (
     <View style={styles.container}>
@@ -38,6 +59,8 @@ export const TabTwoScreen = (): JSX.Element => {
           value={text}
           placeholder="Placeholder"
         />
+        <Text style={styles.title}>radio selected = {selected}</Text>
+        <RadioButton list={radioList} selected={selected} setSelected={setSelected} radioColor="#05B4FF" />
         <Button containerStyle={styles.button} title="Save" onPress={() => setIsvisible(true)} />
         <Button
           containerStyle={styles.button}
