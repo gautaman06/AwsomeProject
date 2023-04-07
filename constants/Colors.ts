@@ -61,3 +61,13 @@ export const EXPENSELISTCARD_COLORS = {
     color: '#B73161',
   },
 };
+
+export const COLORS = {
+  white: '#FFFFFF',
+  lightGrey: '#B6B6B6',
+  mildTextGrey: '#B6B6B6',
+  black: '#000000',
+  green: '#0D8B21',
+  pink: '#B73161',
+  submitText: '#05B4FF',
+};

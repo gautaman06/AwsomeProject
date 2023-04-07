@@ -1,45 +1,37 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import { StyleSheet } from 'react-native';
-import { Button, Text, View } from '../../components/Themed';
-import observableGeneralStore from '../../store/General';
+import { Text, View } from '../../components/Themed';
+import InputBox from '../../components/Input';
+import { COLORS } from '../../constants/Colors';
+import PopUpInput from '../../components/PopUpInput';
 
-interface IAddExpenseProps {
-  setIsTabState: React.Dispatch<
-    React.SetStateAction<{
-      index: number;
-      routes: {
-        key: string;
-        title: string;
-      }[];
-    }>
-  >;
-  tabState: {
-    index: number;
-    routes: {
-      key: string;
-      title: string;
-    }[];
-  };
-}
-
-const AddExpenses = (props: IAddExpenseProps): JSX.Element => {
-  const { setIsTabState, tabState } = props;
-  const { text } = observableGeneralStore;
+const AddExpenses = (): JSX.Element => {
   return (
-    <View>
-      <Text>{text}</Text>
-      <Button
-        containerStyle={styles.button}
-        title="Add Expense and move to list"
-        onPress={() => setIsTabState({ ...tabState, index: 1 })}
-      />
+    <View style={styles.container}>
+      <InputBox placeHolder="Enter Description" />
+      <InputBox placeHolder="Enter Amount" keyBoardType="number-pad" />
+      <View style={styles.paymentContainer}>
+        <Text style={[styles.labelText, { color: COLORS.green }]}>Paid By</Text>
+        <PopUpInput modalContent={<>hello</>} />
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
+  container: { flex: 1, marginHorizontal: 24, marginVertical: 24, gap: 16 },
+  paymentContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 22,
+  },
+  labelText: {
+    fontStyle: 'normal',
+    fontWeight: '700',
+    fontSize: 14,
+  },
   button: {
     marginTop: 20,
     width: 'auto',
