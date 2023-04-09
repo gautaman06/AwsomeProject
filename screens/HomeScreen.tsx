@@ -6,6 +6,7 @@ import { Button, Text, View } from '../components/Themed';
 import GeneralStore from '../store/General';
 import { observer } from 'mobx-react';
 import { RootTabScreenProps } from '../types';
+import SignIn from './SignIn';
 
 export const HomeScreen = ({ navigation }: RootTabScreenProps<'Home'>): JSX.Element => {
   const { text } = GeneralStore;
@@ -16,6 +17,7 @@ export const HomeScreen = ({ navigation }: RootTabScreenProps<'Home'>): JSX.Elem
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
       <EditScreenInfo path="/screens/HomeScreen.tsx" />
       <Button title="Expenses" onPress={() => navigation.navigate('Expenses')} />
+      <SignIn />
     </View>
   );
 };

@@ -1,7 +1,8 @@
 /** DO NOT MAKE ANY CHANGES TO THIS FILE */
 
 import { initializeApp } from 'firebase/app';
-import {getFirestore} from 'firebase/firestore'
+import { getFirestore } from 'firebase/firestore'
+import { getAuth } from 'firebase/auth'
 
 /* The configuration for the firebase app. */
 const firebaseConfig = {
@@ -19,3 +20,4 @@ const app = initializeApp(firebaseConfig)
 
 /* Exporting the firebase app. */
 export const firebase = getFirestore(app)
+export const firebaseAuth = getAuth(app)
