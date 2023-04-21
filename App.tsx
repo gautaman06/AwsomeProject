@@ -5,6 +5,7 @@ import { ModalPortal } from 'react-native-modals';
 import useCachedResources from './hooks/useCachedResources';
 import useColorScheme from './hooks/useColorScheme';
 import Navigation from './navigation';
+import Toast from 'react-native-toast-message';
 
 export default function App() {
   const isLoadingComplete = useCachedResources();
@@ -18,6 +19,7 @@ export default function App() {
         <Navigation colorScheme={colorScheme} />
         <StatusBar />
         <ModalPortal />
+        <Toast />
       </SafeAreaProvider>
     );
   }
