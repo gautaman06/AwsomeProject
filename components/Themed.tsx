@@ -43,7 +43,15 @@ type ThemeProps = {
 export type TextProps = ThemeProps & DefaultText['props'];
 export type ViewProps = ThemeProps & DefaultView['props'];
 export type TextInputProps = ThemeProps & DefaultTextInput['props'];
-export type ButtonProps = ThemeProps & DefaultButton['props'] & { isDanger?: boolean; containerStyle? };
+export type ButtonProps = ThemeProps &
+  DefaultButton['props'] & {
+    isDanger?: boolean;
+    containerStyle?;
+    color?: string;
+    backgroundColor?: string;
+    borderColor?: string;
+    disabled?: boolean;
+  };
 
 /**
  * It takes in a `TextProps` object, and returns a `<DefaultText>` component with the `color` prop set
@@ -103,36 +111,37 @@ export const View = (props: ViewProps) => {
  * @returns A TouchableOpacity component with a Text component inside of it.
  */
 export const Button = (props: ButtonProps) => {
-  const { lightColor, darkColor, isDanger, title, onPress, containerStyle } = props;
-  const backgroundColor = useThemeColor(
-    { light: lightColor, dark: darkColor },
-    isDanger ? 'dangerButtonColor' : 'buttonColor',
-  );
-  const textColor = useThemeColor(
-    { light: lightColor, dark: darkColor },
-    isDanger ? 'dangerButtonTextColor' : 'buttonTextColor',
-  );
+  const { title, onPress, containerStyle, backgroundColor, borderColor, color, disabled } = props;
+  // const backgroundColor = useThemeColor(
+  //   { light: lightColor, dark: darkColor },
+  //   isDanger ? 'dangerButtonColor' : 'buttonColor',
+  // );
+  // const textColor = useThemeColor(
+  //   { light: lightColor, dark: darkColor },
+  //   isDanger ? 'dangerButtonTextColor' : 'buttonTextColor',
+  // );
 
-  const borderColor = useThemeColor(
-    { light: lightColor, dark: darkColor },
-    isDanger ? 'dangerButtonBorderColor' : 'buttonBorderColor',
-  );
+  // const borderColor = useThemeColor(
+  //   { light: lightColor, dark: darkColor },
+  //   isDanger ? 'dangerButtonBorderColor' : 'buttonBorderColor',
+  // );
 
   const buttonStyles = Object.assign({}, styles, {
     container: {
       ...styles.container,
       ...containerStyle,
-      borderColor: borderColor,
+      borderColor: borderColor || backgroundColor,
       backgroundColor: backgroundColor,
+      opacity: disabled ? '50%' : '100%',
     },
     title: {
       ...styles.title,
-      color: textColor,
+      color: color,
     },
   });
 
   return (
-    <TouchableOpacity style={buttonStyles.container} onPress={onPress}>
+    <TouchableOpacity style={buttonStyles.container} onPress={onPress} disabled={disabled}>
       <Text style={buttonStyles.title}> {title} </Text>
     </TouchableOpacity>
   );
@@ -151,6 +160,6 @@ const styles = StyleSheet.create({
   },
   title: {
     color: '#fff',
-    fontSize: 16,
+    // fontSize: 16,
   },
 });
