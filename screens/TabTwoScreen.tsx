@@ -7,20 +7,17 @@ import { RadioButton } from '../components/Radio';
 
 // import EditScreenInfo from '../components/EditScreenInfo';
 import { Text, View, TextInput, Button } from '../components/Themed';
-import GeneralStore from '../store/General';
-import observableGroupsStore from '../store/GroupsStore';
+import store from '../store';
 
 export const TabTwoScreen = (): JSX.Element => {
   const [number, onChangeNumber] = useState('');
   const [visisble, setIsvisible] = useState(false);
   const [selected, setSelected] = useState('');
 
-  const { setText, text } = GeneralStore;
-  const { setListArray } = observableGroupsStore;
+  const { setText, text } = store.generalStore;
 
   useEffect(() => {
     setText(number);
-    setListArray();
   }, [number]);
 
   const radioList = [

@@ -3,13 +3,13 @@ import { StyleSheet } from 'react-native';
 
 import EditScreenInfo from '../components/EditScreenInfo';
 import { Button, Text, View } from '../components/Themed';
-import GeneralStore from '../store/General';
 import { observer } from 'mobx-react';
 import { RootTabScreenProps } from '../types';
 import Left from '../assets/svg/refresh.svg';
+import store from '../store';
 
 export const HomeScreen = ({ navigation }: RootTabScreenProps<'Home'>): JSX.Element => {
-  const { text } = GeneralStore;
+  const { text } = store.generalStore;
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Store Text : {text}</Text>

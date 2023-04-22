@@ -18,5 +18,5 @@ class GroupsStore {
       .catch((err) => console.log(err));
   }
 }
-const observableGroupsStore = new GroupsStore();
-export default observableGroupsStore;
+const groupsStore = new GroupsStore();
+export default groupsStore;
