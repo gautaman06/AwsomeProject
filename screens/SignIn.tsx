@@ -5,13 +5,14 @@ import { authentication } from '../auth';
 import { RootStackScreenProps } from '../types';
 import { firebaseAuth } from '../firebase/firebase';
 import Toast from 'react-native-toast-message';
+import store from '../store';
 
 const SignIn = ({ navigation }: RootStackScreenProps<'SignIn'>) => {
   const [mailId, setMailId] = useState('');
   const [password, setPassword] = useState('');
   const [userName, setUserName] = useState('');
   const [authState, setAuthState] = useState('SignUp');
-
+  const { setUser } = store.generalStore;
   const resetAll = () => {
     setMailId('');
     setPassword('');
@@ -25,6 +26,7 @@ const SignIn = ({ navigation }: RootStackScreenProps<'SignIn'>) => {
   useEffect(() => {
     firebaseAuth.onAuthStateChanged((user) => {
       if (user) {
+        setUser(user);
         Toast.show({
           type: 'success',
           text1: 'Logged in Successfully',
