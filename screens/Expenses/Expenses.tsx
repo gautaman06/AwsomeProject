@@ -13,12 +13,14 @@ const Expenses = (): JSX.Element => {
     routes: [
       { key: 'addExpense', title: 'Add Expense' },
       { key: 'list', title: 'Expenses' },
+      { key: 'settings', title: 'Settings' },
     ],
   });
 
   const renderScene = SceneMap({
-    addExpense: () => <AddExpenses setIsTabState={setIsTabState} tabState={tabState} />,
+    addExpense: () => <AddExpenses />,
     list: SecondRoute,
+    settings: () => <></>,
   });
 
   return (

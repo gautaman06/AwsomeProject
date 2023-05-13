@@ -1,6 +1,7 @@
 import React from 'react';
 import { Animated, StatusBar, StyleSheet, TouchableOpacity } from 'react-native';
 import { NavigationState, Route, SceneRendererProps, TabView } from 'react-native-tab-view';
+import { COLORS } from '../constants/Colors';
 import { View } from './Themed';
 
 interface ITabViewComponent {
@@ -43,6 +44,7 @@ const TabViewComponent = (props: ITabViewComponent) => {
           return (
             <TouchableOpacity key={i} style={styles.tabItem} onPress={() => setIsTabState({ ...tabState, index: i })}>
               <Animated.Text style={{ opacity }}>{route?.title}</Animated.Text>
+              {tabState.index === i && <View style={styles.tabIndicator}></View>}
             </TouchableOpacity>
           );
         })}
@@ -68,6 +70,8 @@ const styles = StyleSheet.create({
   tabBar: {
     flexDirection: 'row',
     paddingTop: StatusBar.currentHeight,
+    position: 'relative',
+    border: `1px solid ${COLORS.lightGrey}`,
   },
   tabItem: {
     flex: 1,
@@ -77,5 +81,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: 'bold',
+  },
+  tabIndicator: {
+    position: 'absolute',
+    bottom: -1,
+    backgroundColor: '#EB2549',
+    width: '100%',
+    height: 3,
   },
 });
