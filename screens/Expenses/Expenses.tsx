@@ -18,7 +18,7 @@ const Expenses = (): JSX.Element => {
   });
 
   const renderScene = SceneMap({
-    addExpense: () => <AddExpenses setIsTabState={setIsTabState} tabState={tabState} />,
+    addExpense: () => <AddExpenses />,
     list: SecondRoute,
     settings: () => <></>,
   });
