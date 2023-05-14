@@ -1,19 +1,30 @@
 import { action, makeObservable, observable } from 'mobx';
-import { getFirebaseData } from '../Utils/Utils';
+import { getGroupsData } from '../firebase/Utils';
+
+interface IGroups {
+  category: string;
+  createdAt: number;
+  debts: boolean;
+  members: number;
+  name: string;
+  setteledUp: boolean;
+  uid: string;
+  id: string;
+}
 
 class GroupsStore {
-  @observable public groups: any[] = [];
+  @observable public groups: IGroups[] = [];
 
   constructor() {
     makeObservable(this);
   }
 
   @action.bound
-  public setListArray(): void {
-    const response = getFirebaseData('groups');
+  public setGroupsList(userId: string): void {
+    const response = getGroupsData('groups', userId);
     response
       .then((data) => {
-        this.groups = data;
+        this.groups = data as IGroups[];
       })
       .catch((err) => console.log(err));
   }
