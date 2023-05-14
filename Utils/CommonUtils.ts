@@ -18,4 +18,33 @@ const convertHexToRGBA = (hexcode: string, opacity: number) => {
   return rgbaColor;
 };
 
-export { convertHexToRGBA };
+const expochTimetoDateConvertor = (epochTime: number) => {
+  // create a new Date object from the epoch time (in milliseconds)
+  const dateObj = new Date(epochTime * 1000);
+  const months = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ];
+  const monthIndex = dateObj.getMonth();
+  const monthName = months[monthIndex];
+  const day = dateObj.getDate();
+  const year = dateObj.getFullYear();
+  const hours = dateObj.getHours();
+  const minutes = dateObj.getMinutes();
+  const ampm = hours >= 12 ? 'pm' : 'am';
+  const formattedHours = hours % 12 || 12;
+  const dateTimeString = `${day} ${monthName} ${year}, ${formattedHours}:${minutes.toString().padStart(2, '0')}${ampm}`;
+  return dateTimeString;
+};
+
+export { convertHexToRGBA, expochTimetoDateConvertor };
