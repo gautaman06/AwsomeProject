@@ -2,10 +2,9 @@ module.exports = {
   env: {
     es6: true,
     node: true,
-		jest: true,
-	browser: true,
-		es2021: true,
-	
+    jest: true,
+    browser: true,
+    es2021: true,
   },
   extends: [
     'eslint:recommended',
@@ -18,8 +17,8 @@ module.exports = {
   parserOptions: {
     project: './tsconfig.json',
     ecmaFeatures: {
-       "jsx": true
-    } 
+      jsx: true,
+    },
   },
   plugins: ['react', 'react-hooks', '@typescript-eslint'],
   rules: {
@@ -30,18 +29,20 @@ module.exports = {
     'react/display-name': 'off',
     'react/jsx-indent': 'off',
     'react/prop-types': 'off',
-        "no-shadow": "off",
-    "@typescript-eslint/no-shadow": "error",
-    "import/extensions": [0],
-    "camelcase": "off",
+    'no-shadow': 'off',
+    '@typescript-eslint/no-shadow': 'error',
+    'import/extensions': [0],
+    camelcase: 'off',
     'import/no-cycle': 'off',
-    'react/no-unescaped-entities':'off',
+    'react/no-unescaped-entities': 'off',
     '@typescript-eslint/no-unused-vars': 'error',
-    "no-param-reassign": 0,
-    "@typescript-eslint/no-floating-promises": 'off',
-    "@typescript-eslint/no-namespace": 'off',
+    'no-param-reassign': 0,
+    '@typescript-eslint/no-floating-promises': 'off',
+    '@typescript-eslint/no-namespace': 'off',
     '@typescript-eslint/no-empty-interface': 'off',
-    '@typescript-eslint/unbound-method':'off'
+    '@typescript-eslint/unbound-method': 'off',
+    '@typescript-eslint/no-unsafe-assignment': 'off',
+    '@typescript-eslint/no-unsafe-member-access': 'off',
   },
   settings: {
     react: {

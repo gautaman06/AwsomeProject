@@ -1,5 +1,6 @@
 {
   "replaceAttrValues": {
-    "#000": "{props.fill}"
-  }
+     "#D9D9D9": "{props.stroke ? props.stroke :'black'}"
+  },
+  "icon":true
 }

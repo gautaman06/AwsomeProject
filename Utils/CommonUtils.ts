@@ -20,7 +20,12 @@ const convertHexToRGBA = (hexcode: string, opacity: number) => {
 
 const expochTimetoDateConvertor = (epochTime: number) => {
   // create a new Date object from the epoch time (in milliseconds)
-  const dateObj = new Date(epochTime * 1000);
+  // const currentEpochTime = new Date().getTime();
+
+  // Create a new Date object using the epoch time
+  const currentDate = new Date(epochTime);
+
+  // Define months array for easy month name retrieval
   const months = [
     'January',
     'February',
@@ -35,16 +40,26 @@ const expochTimetoDateConvertor = (epochTime: number) => {
     'November',
     'December',
   ];
-  const monthIndex = dateObj.getMonth();
-  const monthName = months[monthIndex];
-  const day = dateObj.getDate();
-  const year = dateObj.getFullYear();
-  const hours = dateObj.getHours();
-  const minutes = dateObj.getMinutes();
-  const ampm = hours >= 12 ? 'pm' : 'am';
-  const formattedHours = hours % 12 || 12;
-  const dateTimeString = `${day} ${monthName} ${year}, ${formattedHours}:${minutes.toString().padStart(2, '0')}${ampm}`;
-  return dateTimeString;
+
+  // Extract individual date components
+  const day = currentDate.getDate();
+  const monthIndex = currentDate.getMonth();
+  const year = currentDate.getFullYear();
+  let hours = currentDate.getHours();
+  const minutes = currentDate.getMinutes();
+  const period = hours >= 12 ? 'pm' : 'am';
+
+  // Convert hours to 12-hour format and handle midnight (0)
+  if (hours === 0) {
+    hours = 12;
+  } else if (hours > 12) {
+    hours -= 12;
+  }
+
+  // Format the date and time
+  const formattedDate = `${day} ${months[monthIndex]} ${year}, ${hours}:${minutes}${period}`;
+
+  return formattedDate;
 };
 
 export { convertHexToRGBA, expochTimetoDateConvertor };

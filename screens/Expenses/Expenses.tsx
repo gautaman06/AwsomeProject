@@ -1,13 +1,25 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StatusBar, StyleSheet } from 'react-native';
 import { SceneMap } from 'react-native-tab-view';
 import TabViewComponent from '../../components/Tabs';
 import { View } from '../../components/Themed';
+import { getListOfUsersById } from '../../firebase/QueryUtils';
+import store from '../../store';
 import AddExpenses from './AddExpense';
+import ExpenseList from './ExpensesList';
 
 const SecondRoute = () => <View style={[styles.container, { backgroundColor: '#673ab7' }]} />;
 
 const Expenses = (): JSX.Element => {
+  const {
+    groupsStore: { activeGroup, setActiveGroupUsers },
+  } = store;
+
+  useEffect(() => {
+    const activeGroupUsers = getListOfUsersById(activeGroup.users);
+    setActiveGroupUsers(activeGroupUsers);
+  }, []);
+
   const [tabState, setIsTabState] = useState({
     index: 0,
     routes: [
@@ -19,7 +31,7 @@ const Expenses = (): JSX.Element => {
 
   const renderScene = SceneMap({
     addExpense: () => <AddExpenses />,
-    list: SecondRoute,
+    list: () => <ExpenseList />,
     settings: () => <></>,
   });
 
