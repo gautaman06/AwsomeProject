@@ -104,7 +104,7 @@ export const CreateGroup = () => {
   const { user } = store.generalStore;
   const { setGroupsList } = store.groupsStore;
 
-  const [status, setStatus] = useState(10);
+  const [status, setStatus] = useState(null);
 
   console.log('enabled Gro ->', enabled, groupName, category);
 
