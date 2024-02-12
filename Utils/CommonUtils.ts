@@ -18,4 +18,48 @@ const convertHexToRGBA = (hexcode: string, opacity: number) => {
   return rgbaColor;
 };
 
-export { convertHexToRGBA };
+const expochTimetoDateConvertor = (epochTime: number) => {
+  // create a new Date object from the epoch time (in milliseconds)
+  // const currentEpochTime = new Date().getTime();
+
+  // Create a new Date object using the epoch time
+  const currentDate = new Date(epochTime);
+
+  // Define months array for easy month name retrieval
+  const months = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ];
+
+  // Extract individual date components
+  const day = currentDate.getDate();
+  const monthIndex = currentDate.getMonth();
+  const year = currentDate.getFullYear();
+  let hours = currentDate.getHours();
+  const minutes = currentDate.getMinutes();
+  const period = hours >= 12 ? 'pm' : 'am';
+
+  // Convert hours to 12-hour format and handle midnight (0)
+  if (hours === 0) {
+    hours = 12;
+  } else if (hours > 12) {
+    hours -= 12;
+  }
+
+  // Format the date and time
+  const formattedDate = `${day} ${months[monthIndex]} ${year}, ${hours}:${minutes}${period}`;
+
+  return formattedDate;
+};
+
+export { convertHexToRGBA, expochTimetoDateConvertor };

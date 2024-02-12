@@ -70,4 +70,5 @@ export const COLORS = {
   green: '#0D8B21',
   pink: '#B73161',
   submitText: '#05B4FF',
+  lightBlue: '#05B4FF',
 };

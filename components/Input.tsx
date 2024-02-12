@@ -25,10 +25,13 @@ const styles = StyleSheet.create({
   input: {
     height: 46,
     backgroundColor: COLORS.white,
-    border: `1px solid ${COLORS.lightGrey}`,
+    // border: `1px solid ${COLORS.lightGrey}`,
+    borderColor: `${COLORS.lightGrey}`,
+    borderWidth: 1,
     borderRadius: 6,
     color: COLORS.black,
     padding: 10,
+    margin: 10,
   },
 });
 

@@ -3,14 +3,19 @@ import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { BottomModal, ModalContent } from 'react-native-modals';
 import { COLORS } from '../constants/Colors';
 import ButtonComponent from './ButtonComponent';
+import Icon from './Icons/Icons';
+import { Button } from './Themed';
 
 interface IPopUpInputProps {
   modalContent: React.ReactElement;
   modalTitle?: string;
+  buttonTitle: string;
+  onSubmitClick?: () => void;
+  closeTimeout?: number;
 }
 
 const PopUpInput = (props: IPopUpInputProps) => {
-  const { modalTitle = 'Modal Title', modalContent = null } = props;
+  const { modalTitle = 'Modal Title', modalContent = null, buttonTitle, onSubmitClick, closeTimeout } = props;
 
   const [isVisible, setIsVisible] = useState(false);
 
@@ -18,13 +23,19 @@ const PopUpInput = (props: IPopUpInputProps) => {
   const openModal = () => setIsVisible(true);
 
   const onSubmit = () => {
-    setIsVisible(false);
+    onSubmitClick();
+    setTimeout(() => {
+      setIsVisible(false);
+    }, 3000);
   };
 
   const renderModalHeader = () => {
     return (
       <View style={styles.modalHeaderContainer}>
         <View style={styles.modalLeftContentContainer}>
+          <TouchableOpacity onPress={() => onModalClose()}>
+            <Icon icon="close" />
+          </TouchableOpacity>
           <Text onPress={() => onModalClose()} style={styles.modalTitle}>
             {modalTitle}
           </Text>
@@ -38,7 +49,7 @@ const PopUpInput = (props: IPopUpInputProps) => {
 
   return (
     <>
-      <ButtonComponent title="Sowmynaraynan" onClick={openModal} />
+      <Button title={buttonTitle} onPress={openModal} />
       <BottomModal
         visible={isVisible}
         onTouchOutside={onModalClose}
@@ -73,6 +84,7 @@ const styles = StyleSheet.create({
     paddingBottom: 15,
     paddingLeft: 24,
     paddingRight: 24,
+    width: '100%',
   },
   modalLeftContentContainer: {
     display: 'flex',
@@ -83,6 +95,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     fontSize: 14,
     color: COLORS.black,
+    marginLeft: 10,
   },
   modalSubmitText: {
     fontStyle: 'normal',

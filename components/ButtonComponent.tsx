@@ -21,10 +21,12 @@ const styles = StyleSheet.create({
   buttonContainer: {
     height: 43,
     backgroundColor: COLORS.white,
-    border: `1px solid ${COLORS.lightGrey}`,
+    borderColor: `${COLORS.lightGrey}`,
+    borderWidth: 1,
     borderRadius: 6,
     color: COLORS.black,
     padding: 10,
+    margin: 10,
     fontStyle: 'normal',
     fontWeight: '700',
     fontSize: 14,

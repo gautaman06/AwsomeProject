@@ -15,6 +15,7 @@ import {
 
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
+import Icon from './Icons/Icons';
 
 /**
  * It returns the color from the props if it exists, otherwise it returns the color from the theme
@@ -45,6 +46,7 @@ export type ViewProps = ThemeProps & DefaultView['props'];
 export type TextInputProps = ThemeProps & DefaultTextInput['props'];
 export type ButtonProps = ThemeProps &
   DefaultButton['props'] & {
+    icon?: string;
     isDanger?: boolean;
     containerStyle?;
     color?: string;
@@ -111,7 +113,7 @@ export const View = (props: ViewProps) => {
  * @returns A TouchableOpacity component with a Text component inside of it.
  */
 export const Button = (props: ButtonProps) => {
-  const { title, onPress, containerStyle, backgroundColor, borderColor, color, disabled } = props;
+  const { title, onPress, containerStyle, backgroundColor, borderColor, color, disabled, icon } = props;
   // const backgroundColor = useThemeColor(
   //   { light: lightColor, dark: darkColor },
   //   isDanger ? 'dangerButtonColor' : 'buttonColor',
@@ -133,6 +135,7 @@ export const Button = (props: ButtonProps) => {
       borderColor: borderColor || backgroundColor,
       backgroundColor: backgroundColor,
       opacity: disabled ? '50%' : '100%',
+      flexDirection: 'row',
     },
     title: {
       ...styles.title,
@@ -142,6 +145,7 @@ export const Button = (props: ButtonProps) => {
 
   return (
     <TouchableOpacity style={buttonStyles.container} onPress={onPress} disabled={disabled}>
+      {icon && <Icon icon={icon} />}
       <Text style={buttonStyles.title}> {title} </Text>
     </TouchableOpacity>
   );

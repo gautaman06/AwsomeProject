@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 import { StyleSheet } from 'react-native';
-import { Text, View } from '../../components/Themed';
+import { Button, Text, View } from '../../components/Themed';
 import InputBox from '../../components/Input';
 import { COLORS } from '../../constants/Colors';
 import PopUpInput from '../../components/PopUpInput';
 import BouncyCheckbox from '../../components/BouncyCheckbox';
+import store from '../../store';
 
 interface ICheckboxList {
   value: string;
@@ -27,6 +28,21 @@ const names: ICheckboxList[] = [
 ];
 
 const AddExpenses = (): JSX.Element => {
+  const {
+    groupsStore: { activeGroupUsers, activeGroup },
+  } = store;
+
+  const [description, setDescription] = useState('');
+  const [amount, setAmount] = useState(null);
+  const [paidBy, setPaidBy] = useState('');
+
+  useEffect(() => {
+    if (activeGroupUsers.length) {
+      const paidByUserName = activeGroupUsers.find((user) => user.uid === activeGroup.uid).name;
+      console.log('add Expense', paidByUserName);
+    }
+  }, []);
+
   const [namesList, setNamesList] = useState<ICheckboxList[]>(names);
 
   const updateNamesList = (data: Partial<ICheckboxList>, isParentCheckbox: boolean = false) => {
@@ -72,19 +88,29 @@ const AddExpenses = (): JSX.Element => {
       <InputBox placeHolder="Enter Amount" keyBoardType="number-pad" />
       <View style={styles.paymentContainer}>
         <Text style={[styles.labelText, { color: COLORS.green }]}>Paid By</Text>
-        <PopUpInput modalContent={renderModalContent()} />
+        <PopUpInput buttonTitle="Somy" modalContent={renderModalContent()} />
+      </View>
+      <View style={styles.paymentContainer}>
+        <Text style={[styles.labelText, { color: COLORS.pink }]}>Split By</Text>
+        <PopUpInput buttonTitle="Equally" modalContent={renderModalContent()} />
+        <PopUpInput buttonTitle="Un Equally" modalContent={renderModalContent()} />
+      </View>
+      <View>
+        <Button icon="refresh" title="Reset" onPress={() => null} />
+        <Button title="Add Expense" onPress={() => null} backgroundColor={COLORS.green} />
       </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, marginHorizontal: 24, marginVertical: 24, gap: 16 },
+  container: { flex: 1, marginHorizontal: 10, marginVertical: 20, gap: 16 },
   paymentContainer: {
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
     gap: 22,
+    marginLeft: 12,
   },
   labelText: {
     fontStyle: 'normal',
