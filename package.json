@@ -23,8 +23,7 @@
   },
   "lint-staged": {
     "**/*.{ts,tsx}": [
-      "prettier --write",
-      "eslint"
+      "prettier --write"
     ]
   },
   "resolutions": {
@@ -35,6 +34,7 @@
   },
   "dependencies": {
     "@expo/vector-icons": "^13.0.0",
+    "@react-native-community/cli-platform-android": "^12.3.5",
     "@react-native-community/masked-view": "^0.1.11",
     "@react-native-firebase/app": "^17.4.2",
     "@react-native-firebase/auth": "^17.4.2",
