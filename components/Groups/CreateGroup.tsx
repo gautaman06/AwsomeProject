@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { COLORS } from '../../constants/Colors';
 import { API_STATUSCODE, CATEGORY_LIST } from '../../constants/constant';
@@ -32,29 +32,22 @@ export interface ICreateGroups {
 interface IStatusProps {
   message: string;
   icon: string;
+  code: number;
 }
 
 const renderModalContent = (props: ICreateGroupsProps) => {
   const { setEnabled, setGroupName, category, enabled, groupName, setCategory } = props;
   return (
     <View style={styles.render_content_conatiner}>
-      <View style={styles.group_container}>
-        <View style={styles.group_icon_container}>
-          <Icon icon="group" />
-        </View>
-        <View style={styles.group_name_container}>
-          <Text style={styles.group_name_header}>Group Name</Text>
-          <TextInput
-            focusable={false}
-            style={styles.input}
-            onChangeText={(value) => {
-              setGroupName(value);
-            }}
-            value={groupName}
-            placeholder=""
-          />
-        </View>
-      </View>
+      <TextInput
+        focusable={false}
+        style={styles.input}
+        onChangeText={(value) => {
+          setGroupName(value);
+        }}
+        value={groupName}
+        placeholder="Enter Group Name"
+      />
       <View style={styles.simplify_debts_container}>
         <Text style={{ fontWeight: '600' }}>Enable Simplify Debts</Text>
         <Switch styles={styles.simplify_debts_toggle} value={enabled} onChangeValue={() => setEnabled(!enabled)} />
@@ -86,13 +79,13 @@ const renderModalContent = (props: ICreateGroupsProps) => {
 };
 
 const StatusRender = (props: IStatusProps) => {
-  const { icon, message } = props;
+  const { icon, message, code } = props;
   return (
     <View style={styles.status_container}>
       <View style={styles.status_icon}>
-        <Icon icon={icon} />
+        <Icon icon={icon} svgProps={{ width: 60, height: 60 }} />
       </View>
-      <Text style={{ color: COLORS.green }}>{message}</Text>
+      <Text style={styles.status_text(code === API_STATUSCODE.SUCCESS)}>{message}</Text>
     </View>
   );
 };
@@ -101,12 +94,26 @@ export const CreateGroup = () => {
   const [groupName, setGroupName] = useState('');
   const [enabled, setEnabled] = useState(true);
   const [category, setCategory] = useState('Home');
+  const [status, setStatus] = useState(null);
   const { user } = store.generalStore;
   const { setGroupsList } = store.groupsStore;
 
-  const [status, setStatus] = useState(10);
+  const resetValue = () => {
+    if (groupName) {
+      setGroupName('');
+    }
+    if (enabled) {
+      setEnabled(false);
+    }
+    if (category !== 'Home') {
+      setCategory('Home');
+    }
+    if (status) {
+      setStatus(null);
+    }
+  };
 
-  console.log('enabled Gro ->', enabled, groupName, category);
+  const disableSubmit = !groupName;
 
   const onSubmit = () => {
     setStatus(API_STATUSCODE.LOADING);
@@ -130,8 +137,9 @@ export const CreateGroup = () => {
 
   const modalContent = status ? (
     <StatusRender
+      code={status}
       icon={status === API_STATUSCODE.LOADING ? 'loading' : 'success'}
-      message={status === API_STATUSCODE.LOADING ? 'Group Created Successfully' : 'Group Creation in process ...'}
+      message={status === API_STATUSCODE.LOADING ? 'Group Creation in process ...' : 'Group Created Successfully'}
     />
   ) : (
     renderModalContent({ setEnabled, setGroupName, setCategory, category, enabled, groupName })
@@ -144,14 +152,18 @@ export const CreateGroup = () => {
       modalTitle="Create Group"
       closeTimeout={status === API_STATUSCODE.SUCCESS ? 9000 : 0}
       modalContent={modalContent}
+      reset={resetValue}
+      disableSubmit={disableSubmit}
     />
   );
 };
 
 const styles = StyleSheet.create<any>({
   input: {
-    height: 26,
-    margin: 12,
+    height: 40,
+    // margin: 12,
+    marginVertical: 12,
+    marginRight: 12,
     borderWidth: 1,
     padding: 10,
   },
@@ -231,12 +243,8 @@ const styles = StyleSheet.create<any>({
     gap: 16,
     height: '100%',
   },
-  // status_icon: {
-  //   animation: 'spin 1.5s linear infinite',
-  // },
-  // '@keyframes spin': {
-  //   '100%': {
-  //     transform: [{ rotate: '360deg' }],
-  //   },
-  // },
+  status_text: (isSuccess) => ({
+    fontSize: 14,
+    color: isSuccess ? COLORS.green : COLORS.black,
+  }),
 });

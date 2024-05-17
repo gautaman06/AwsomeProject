@@ -65,7 +65,7 @@ export const TabTwoScreen = (): JSX.Element => {
           isDanger
           onPress={() => Alert.alert('Cancel button pressed')}
         />
-        <ExpenseListCard description="Briyani shop" name="Gautaman" isInvolved isLent amount={200} date="Mar 23" />
+        {/* <ExpenseListCard description="Briyani shop" name="Gautaman" isInvolved isLent amount={200} date="Mar 23" />
         <ExpenseListCard
           description="Train ticket"
           name="Jeeva"
@@ -81,7 +81,7 @@ export const TabTwoScreen = (): JSX.Element => {
           isLent={false}
           amount={200}
           date="Sep 23"
-        />
+        /> */}
         <BottomModal
           visible={visisble}
           onTouchOutside={() => setIsvisible(false)}

@@ -4,109 +4,195 @@ import { StyleSheet } from 'react-native';
 import { Button, Text, View } from '../../components/Themed';
 import InputBox from '../../components/Input';
 import { COLORS } from '../../constants/Colors';
-import PopUpInput from '../../components/PopUpInput';
-import BouncyCheckbox from '../../components/BouncyCheckbox';
 import store from '../../store';
+import SingleSelect from '../../components/SingleSelect';
+import MultipleSelect from '../../components/MultiSelect';
+import Switch from '../../components/Switch';
+import PopUpInput from '../../components/PopUpInput';
+import { API_STATUSCODE } from '../../constants/constant';
+import Toast from 'react-native-toast-message';
+import { updateDocument } from '../../firebase/QueryUtils';
 
-interface ICheckboxList {
-  value: string;
-  text: string;
-  isChecked: boolean;
+interface IAddExpenseProps {
+  isEditMode?: boolean;
+  editProps?: any;
+  closeModal?: () => void;
+  getExpenseList?: () => void;
+  setIsTabState?: () => void;
 }
 
-const names: ICheckboxList[] = [
-  {
-    value: 'g',
-    text: 'Gautam',
-    isChecked: false,
-  },
-  {
-    value: 's',
-    text: 'Sowmy',
-    isChecked: true,
-  },
-];
-
-const AddExpenses = (): JSX.Element => {
+const AddExpenses = (props: IAddExpenseProps): JSX.Element => {
+  const { isEditMode, editProps, closeModal, getExpenseList, setIsTabState } = props;
   const {
     groupsStore: { activeGroupUsers, activeGroup },
+    expenseStore: { addExpense },
+    generalStore: { user },
   } = store;
 
   const [description, setDescription] = useState('');
+  const [totalAmount, setTotalAmount] = useState(null);
   const [amount, setAmount] = useState(null);
-  const [paidBy, setPaidBy] = useState('');
+  const [paidBy, setPaidBy] = useState(null);
+  const [splitMembers, setSplitMembers] = useState([]);
+  const [groupMembers, setGroupMebers] = useState([]);
+  const [isEqual, setIsEqual] = useState(false);
 
   useEffect(() => {
+    if (isEditMode) {
+      console.log(editProps);
+      setDescription(editProps?.description);
+      setTotalAmount(editProps?.totalAmount);
+      setPaidBy({ key: editProps?.paidBy?.id, value: editProps?.paidBy?.name });
+      setIsEqual(editProps?.splitBy === 1);
+      const splitMembers = editProps?.members.map((member) => {
+        return { value: member.name, key: member.id };
+      });
+      const amount = editProps?.members.map((member) => {
+        return { key: member.id, amount: member?.amount };
+      });
+      setSplitMembers(splitMembers);
+      setAmount(amount);
+    }
+  }, [isEditMode]);
+
+  const updateGroupMembers = () => {
     if (activeGroupUsers.length) {
-      const paidByUserName = activeGroupUsers.find((user) => user.uid === activeGroup.uid).name;
-      console.log('add Expense', paidByUserName);
-    }
-  }, []);
-
-  const [namesList, setNamesList] = useState<ICheckboxList[]>(names);
-
-  const updateNamesList = (data: Partial<ICheckboxList>, isParentCheckbox: boolean = false) => {
-    const { isChecked, value = null } = data;
-
-    const newNamesList = [...namesList];
-
-    if (!isParentCheckbox) {
-      newNamesList.forEach((name) => {
-        if (name.value === value) {
-          name.isChecked = isChecked;
-        }
+      const groupMr = activeGroupUsers.map((item) => {
+        return {
+          value: item?.name,
+          key: item?.uid,
+        };
       });
-    } else {
-      newNamesList.forEach((name) => {
-        name.isChecked = isChecked;
-      });
+      setGroupMebers(groupMr);
     }
-
-    setNamesList(newNamesList);
   };
 
-  const isAllNamesChecked = namesList.every((name) => name.isChecked);
-  const isPartial = namesList.some((name) => name.isChecked);
+  const resetValue = () => {
+    setDescription('');
+    setTotalAmount(null);
+    setAmount(null);
+    setPaidBy(null);
+    setSplitMembers([]);
+    setIsEqual(false);
+    updateGroupMembers();
+  };
 
-  const renderModalContent = () => (
-    <>
-      <BouncyCheckbox
-        text={'Select All'}
-        isChecked={isAllNamesChecked}
-        isPartial={isPartial}
-        onPress={(isChecked, _) => updateNamesList({ isChecked }, true)}
-      />
-      {namesList.map((item) => {
-        return <BouncyCheckbox {...item} onPress={(isChecked, value) => updateNamesList({ isChecked, value })} />;
-      })}
-    </>
-  );
+  useEffect(() => {
+    updateGroupMembers();
+  }, []);
+
+  const onSubmit = () => {
+    const currentDate = new Date().getTime();
+    const splitMembersModified = splitMembers?.map((itemA) => ({
+      ...{ id: itemA.key, name: itemA.value },
+      ...{ amount: isEqual ? null : amount?.find((itemB) => itemB?.key === itemA?.key).amount },
+    }));
+    const payload = {
+      totalAmount,
+      description,
+      groupId: activeGroup.id,
+      paidBy: {
+        id: paidBy?.key,
+        name: paidBy?.value,
+      },
+      splitBy: isEqual ? 1 : 2,
+      members: splitMembersModified,
+      updatedAt: currentDate,
+      createdAt: isEditMode ? editProps?.createdAt : currentDate,
+      updatedBy: user?.displayName,
+    };
+
+    if (isEditMode) {
+      updateDocument('expense', editProps?.id, payload);
+      getExpenseList();
+      closeModal();
+    } else {
+      addExpense(payload);
+      setIsTabState();
+    }
+    Toast.show({
+      type: 'success',
+      position: 'bottom',
+      text1: `Expense ${isEditMode ? 'updated' : 'Added'} successfully`,
+    });
+    resetValue();
+  };
+
+  const seeExpenseDetails = () => {
+    return (
+      <View style={styles.expense_details_container}>
+        <Text>{totalAmount}</Text>
+        <Text>Paid by {paidBy?.value}</Text>
+        {isEqual ? <Text>{totalAmount / splitMembers.length} each splitted equally</Text> : null}
+      </View>
+    );
+  };
 
   return (
     <View style={styles.container}>
-      <InputBox placeHolder="Enter Description" />
-      <InputBox placeHolder="Enter Amount" keyBoardType="number-pad" />
-      <View style={styles.paymentContainer}>
+      <InputBox value={description} placeHolder="Enter Description" onChange={(value) => setDescription(value)} />
+      <InputBox
+        value={totalAmount || ''}
+        placeHolder="Enter Amount"
+        keyBoardType="number-pad"
+        onChange={(value) => setTotalAmount(parseInt(value, 10))}
+      />
+      <View style={{ margin: 10, gap: 12 }}>
         <Text style={[styles.labelText, { color: COLORS.green }]}>Paid By</Text>
-        <PopUpInput buttonTitle="Somy" modalContent={renderModalContent()} />
+        <SingleSelect selectedValue={paidBy} setSelected={(val) => setPaidBy(val)} data={groupMembers} />
+        <View style={styles.splitContainer}>
+          <Text style={{ fontWeight: '600' }}>Split Equally </Text>
+          <Switch styles={styles.split} value={isEqual} onChangeValue={() => setIsEqual(!isEqual)} />
+        </View>
+        <View style={{ gap: 12 }}>
+          <Text style={[styles.labelText, { color: COLORS.pink }]}>Split By</Text>
+          <MultipleSelect
+            amountValue={amount}
+            selectedValues={splitMembers}
+            setSelected={(val) => {
+              setSplitMembers(val);
+            }}
+            setAmountValue={setAmount}
+            splitEqualy={isEqual}
+            data={groupMembers}
+            save="value"
+            label="Categories"
+          />
+        </View>
       </View>
-      <View style={styles.paymentContainer}>
-        <Text style={[styles.labelText, { color: COLORS.pink }]}>Split By</Text>
-        <PopUpInput buttonTitle="Equally" modalContent={renderModalContent()} />
-        <PopUpInput buttonTitle="Un Equally" modalContent={renderModalContent()} />
+      <View style={styles.action_container}>
+        <Button
+          containerStyle={{ width: 'auto', padding: 10 }}
+          icon="refresh"
+          title="Reset"
+          onPress={() => resetValue()}
+        />
+        <Button
+          containerStyle={{ width: 'auto', padding: 10 }}
+          title={`${isEditMode ? 'Update' : ' Add'} Expense`}
+          color="#FFFFFF"
+          onPress={() => onSubmit()}
+          backgroundColor={COLORS.buttonGreen}
+        />
       </View>
-      <View>
-        <Button icon="refresh" title="Reset" onPress={() => null} />
-        <Button title="Add Expense" onPress={() => null} backgroundColor={COLORS.green} />
-      </View>
+      {/* <PopUpInput
+        onSubmitClick={() => onSubmit()}
+        buttonTitle="Add"
+        modalTitle="Create Group"
+        // closeTimeout={status === API_STATUSCODE.SUCCESS ? 9000 : 0}
+        modalContent={seeExpenseDetails()}
+        // reset={resetValue}
+        // disableSubmit={disableSubmit}
+      /> */}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, marginHorizontal: 10, marginVertical: 20, gap: 16 },
+  container: { flex: 1, marginHorizontal: 10, marginVertical: 20 },
   paymentContainer: {
     display: 'flex',
+    position: 'relative',
     flexDirection: 'row',
     alignItems: 'center',
     gap: 22,
@@ -123,6 +209,37 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     position: 'absolute',
+  },
+  splitContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 12,
+  },
+  split: {
+    marginLeft: 4,
+    position: 'absolute',
+    right: 16,
+  },
+  splitDescription: {
+    fontSize: 12,
+    fontWeight: '400',
+    color: COLORS.lightGrey,
+  },
+  action_container: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 30,
+    paddingTop: 10,
+  },
+  expense_details_container: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 5,
+    marginTop: 10,
   },
 });
 

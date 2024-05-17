@@ -5,18 +5,23 @@ import { COLORS } from '../constants/Colors';
 interface IInputBoxProps {
   placeHolder?: string;
   keyBoardType?: KeyboardTypeOptions;
-  onChange?: () => void;
+  onChange?: (value) => void;
+  value;
 }
 
 const InputBox = (props: IInputBoxProps) => {
-  const { placeHolder = 'Enter value', keyBoardType = 'default' } = props;
+  const { placeHolder = 'Enter value', keyBoardType = 'default', onChange, value } = props;
 
   return (
     <TextInput
+      value={value}
       style={styles.input}
       keyboardType={keyBoardType}
       placeholder={placeHolder}
       placeholderTextColor={COLORS.mildTextGrey}
+      onChangeText={(value) => {
+        onChange(value);
+      }}
     />
   );
 };

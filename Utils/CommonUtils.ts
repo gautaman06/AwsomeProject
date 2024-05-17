@@ -1,3 +1,5 @@
+import { DATE_FORMAT } from '../constants/constant';
+
 /**
  * It takes a hexcode and an opacity value, converts the hexcode to RGB, and returns an rgba color
  * string
@@ -18,7 +20,7 @@ const convertHexToRGBA = (hexcode: string, opacity: number) => {
   return rgbaColor;
 };
 
-const expochTimetoDateConvertor = (epochTime: number) => {
+const expochTimetoDateConvertor = (epochTime: number, format: DATE_FORMAT) => {
   // create a new Date object from the epoch time (in milliseconds)
   // const currentEpochTime = new Date().getTime();
 
@@ -56,10 +58,34 @@ const expochTimetoDateConvertor = (epochTime: number) => {
     hours -= 12;
   }
 
-  // Format the date and time
-  const formattedDate = `${day} ${months[monthIndex]} ${year}, ${hours}:${minutes}${period}`;
+  let formattedDate;
+
+  switch (format) {
+    case DATE_FORMAT.DD_MM_YYYY_HH_MM:
+      formattedDate = `${day} ${months[monthIndex]} ${year}, ${hours}:${minutes}${period}`;
+      break;
+    case DATE_FORMAT.MM_DD_OBJECT:
+      formattedDate = {
+        month: months[monthIndex],
+        day: day,
+      };
+      break;
+  }
 
   return formattedDate;
 };
 
-export { convertHexToRGBA, expochTimetoDateConvertor };
+const formatErrorMessage = (errorCode: string) => {
+  // Remove "auth/" from the beginning
+  let formattedCode = errorCode.replace('auth/', '');
+
+  // Replace "-" with spaces
+  formattedCode = formattedCode.replace(/-/g, ' ');
+
+  // Capitalize the first letter
+  formattedCode = formattedCode.charAt(0).toUpperCase() + formattedCode.slice(1);
+
+  return formattedCode;
+};
+
+export { convertHexToRGBA, expochTimetoDateConvertor, formatErrorMessage };

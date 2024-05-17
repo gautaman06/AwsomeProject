@@ -25,6 +25,7 @@ const SignIn = ({ navigation }: RootStackScreenProps<'SignIn'>) => {
 
   useEffect(() => {
     firebaseAuth.onAuthStateChanged((user) => {
+      console.log(user);
       if (user) {
         setUser(user);
         Toast.show({
@@ -78,6 +79,14 @@ const SignIn = ({ navigation }: RootStackScreenProps<'SignIn'>) => {
         value={password}
         placeholder="Password"
       />
+      {/* <Button
+        color="#FFFFFF"
+        backgroundColor="#5D6BE9"
+        containerStyle={styles.button}
+        title="Google"
+        onPress={() => authentication.googleSignIn()}
+        // disabled={isSignupDisabled}
+      /> */}
       {authState === 'SignUp' ? (
         <Button
           color="#FFFFFF"

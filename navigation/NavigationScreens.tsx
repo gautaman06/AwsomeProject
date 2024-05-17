@@ -15,16 +15,16 @@ export const NavigationScreen = (): JSX.Element => {
 
   return (
     <BottomTab.Navigator
-      initialRouteName="TabOne"
+      initialRouteName="Groups"
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme].tint,
       }}
     >
       <BottomTab.Screen
-        name="TabOne"
+        name="Groups"
         component={HomeScreen}
-        options={({ navigation }: RootTabScreenProps<'TabOne'>) => ({
-          title: 'Home',
+        options={({ navigation }: RootTabScreenProps<'Groups'>) => ({
+          title: 'Groups',
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
           headerRight: () => (
             <Pressable

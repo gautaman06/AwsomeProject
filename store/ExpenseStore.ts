@@ -1,5 +1,5 @@
 import { action, makeObservable, observable, runInAction } from 'mobx';
-import { getExpenseList } from '../firebase/QueryUtils';
+import { addDocument, getExpenseList } from '../firebase/QueryUtils';
 
 class ExpenseStore {
   @observable public expenseList = [];
@@ -9,17 +9,31 @@ class ExpenseStore {
   }
 
   @action.bound
-  public setExpenseList(userId?: string): void {
-    const response = getExpenseList('expense', userId, ' 643EJI1EEYDjTxDiKTaR ');
+  public setExpenseList(userId?: string, groupId?): void {
+    const response = getExpenseList('expense', userId, groupId);
     response
       .then((data) => {
         runInAction(() => {
           const expenseList = data as any;
           this.expenseList = expenseList;
-          console.log(expenseList);
         });
       })
       .catch((err) => console.log(err));
+  }
+
+  @action.bound
+  public addExpense(payload: any): void {
+    addDocument('expense', payload);
+    // const response = getExpenseList('expense', userId, ' 643EJI1EEYDjTxDiKTaR ');
+    // response
+    //   .then((data) => {
+    //     runInAction(() => {
+    //       const expenseList = data as any;
+    //       this.expenseList = expenseList;
+    //       console.log(expenseList);
+    //     });
+    //   })
+    //   .catch((err) => console.log(err));
   }
 }
 const expenseStore = new ExpenseStore();

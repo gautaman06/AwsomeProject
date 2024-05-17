@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { BottomModal, ModalContent } from 'react-native-modals';
 import { COLORS } from '../constants/Colors';
@@ -9,18 +9,45 @@ import { Button } from './Themed';
 interface IPopUpInputProps {
   modalContent: React.ReactElement;
   modalTitle?: string;
-  buttonTitle: string;
+  buttonTitle?: string;
   onSubmitClick?: () => void;
+  onClose?: () => void;
   closeTimeout?: number;
+  reset?: () => void;
+  disableSubmit?: boolean;
+  renderButtonComponent?: (openModal) => React.ReactElement;
+  height?: number;
+  isHideSubmit?: boolean;
 }
 
 const PopUpInput = (props: IPopUpInputProps) => {
-  const { modalTitle = 'Modal Title', modalContent = null, buttonTitle, onSubmitClick, closeTimeout } = props;
+  const {
+    modalTitle = 'Modal Title',
+    modalContent = null,
+    buttonTitle,
+    onSubmitClick,
+    closeTimeout,
+    reset,
+    disableSubmit,
+    renderButtonComponent = null,
+    height,
+    onClose,
+    isHideSubmit = false,
+  } = props;
 
   const [isVisible, setIsVisible] = useState(false);
 
-  const onModalClose = () => setIsVisible(false);
+  const onModalClose = () => {
+    setIsVisible(false);
+    onClose();
+  };
   const openModal = () => setIsVisible(true);
+
+  useEffect(() => {
+    if (reset && !isVisible) {
+      reset();
+    }
+  }, [isVisible]);
 
   const onSubmit = () => {
     onSubmitClick();
@@ -40,21 +67,23 @@ const PopUpInput = (props: IPopUpInputProps) => {
             {modalTitle}
           </Text>
         </View>
-        <TouchableOpacity onPress={onSubmit}>
-          <Text style={styles.modalSubmitText}>Done</Text>
-        </TouchableOpacity>
+        {isHideSubmit ? null : (
+          <TouchableOpacity onPress={onSubmit} disabled={disableSubmit}>
+            <Text style={styles.modalSubmitText(disableSubmit)}>Done</Text>
+          </TouchableOpacity>
+        )}
       </View>
     );
   };
 
   return (
     <>
-      <Button title={buttonTitle} onPress={openModal} />
+      {renderButtonComponent ? renderButtonComponent(openModal) : <Button title={buttonTitle} onPress={openModal} />}
       <BottomModal
         visible={isVisible}
         onTouchOutside={onModalClose}
         onSwipeOut={onModalClose}
-        height={0.5}
+        height={height || 0.5}
         width={1}
         modalTitle={renderModalHeader()}
       >
@@ -71,7 +100,7 @@ const PopUpInput = (props: IPopUpInputProps) => {
   );
 };
 
-const styles = StyleSheet.create({
+const styles = StyleSheet.create<any>({
   modalHeaderContainer: {
     height: 45,
     display: 'flex',
@@ -97,12 +126,12 @@ const styles = StyleSheet.create({
     color: COLORS.black,
     marginLeft: 10,
   },
-  modalSubmitText: {
+  modalSubmitText: (disabled) => ({
     fontStyle: 'normal',
-    fontWeight: '700',
+    fontWeight: disabled ? '400' : '700',
     fontSize: 14,
-    color: COLORS.submitText,
-  },
+    color: disabled ? COLORS.disableText : COLORS.submitText,
+  }),
 });
 
 export default PopUpInput;

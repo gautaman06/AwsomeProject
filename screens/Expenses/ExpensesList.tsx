@@ -1,49 +1,182 @@
-import React, { useEffect } from 'react';
-import { FlatList } from 'react-native';
+import { observer } from 'mobx-react';
+import React, { useEffect, useState } from 'react';
+import { Alert, FlatList, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import ExpenseListCard from '../../components/ExpenseListCard';
+import Icon from '../../components/Icons/Icons';
+import PopUpInput from '../../components/PopUpInput';
+import { SwipeButton } from '../../components/SwipeButton';
+import { Button, View } from '../../components/Themed';
+import { COLORS } from '../../constants/Colors';
+import { DATE_FORMAT } from '../../constants/constant';
+import { deleteDocument, updateDocument } from '../../firebase/QueryUtils';
 import store from '../../store';
+import { expochTimetoDateConvertor } from '../../Utils/CommonUtils';
+import { formatTransactionHistory } from '../../Utils/SimplifyDebts';
+import AddExpenses from './AddExpense';
 
 const isCurrentUserInvolvedInExpense = (membersInvolvedList, userId) => {
   return membersInvolvedList.some((member) => member?.id === userId);
 };
 
 const ExpenseList = () => {
-  const { user } = store.generalStore;
-  const { setExpenseList, expenseList } = store.expenseStore;
+  const {
+    generalStore: { user },
+    expenseStore: { setExpenseList, expenseList },
+    groupsStore: { activeGroup },
+  } = store;
 
   useEffect(() => {
-    setExpenseList(user.uid);
+    setExpenseList(user.uid, activeGroup?.id);
   }, []);
 
+  const getUpdatedList = () => {
+    return expenseList.map((expense) => {
+      const isLent = expense?.paidBy?.id === user.uid;
+      const isCurrentUserInvolved = isCurrentUserInvolvedInExpense(expense.members, user.uid);
+      return {
+        ...expense,
+        isLent: isLent,
+        isInvolved: isCurrentUserInvolved || isLent,
+        isCurrentUserInvolved: isCurrentUserInvolved,
+      };
+    });
+  };
+
   const Item = ({ item }) => {
-    const isLent = item.uid === user.uid;
+    const [isEditMode, setIsEditMode] = useState(false);
+
+    const isLent = item?.isLent;
 
     const isSplitEqually = item?.splitBy === 1;
 
-    const membersList = isSplitEqually ? item.equalMembers : item.unEqualMembers;
+    const membersList = item?.members;
 
-    const isCurrentUserInvolved = isCurrentUserInvolvedInExpense(membersList, user.uid);
+    const membersCount = membersList.length;
 
-    console.log(isCurrentUserInvolved, membersList);
-    return (
+    const totalAmount = item.totalAmount;
+
+    const isCurrentUserInvolved = item.isCurrentUserInvolved;
+
+    let amountTobeTransactioned = 0;
+    if (isCurrentUserInvolved) {
+      if (isLent) {
+        amountTobeTransactioned = isSplitEqually
+          ? (totalAmount / membersCount) * (membersCount - 1)
+          : totalAmount - membersList.find((member) => member?.id === user.uid)?.amount;
+      } else {
+        amountTobeTransactioned = isSplitEqually
+          ? totalAmount / membersCount
+          : membersList.find((member) => member?.id === user.uid)?.amount;
+      }
+    } else {
+      if (isLent) {
+        amountTobeTransactioned = totalAmount;
+      }
+    }
+
+    const monthDate = expochTimetoDateConvertor(item.createdAt, DATE_FORMAT.MM_DD_OBJECT);
+
+    const onClick = (openModal) => {
+      openModal();
+    };
+
+    const onDelete = () => {
+      deleteDocument('expense', item.id);
+      setExpenseList(user.uid, activeGroup?.id);
+    };
+
+    const expenseCardComponent = (openModal) => (
       <ExpenseListCard
         description={item.description}
-        name={item.paidBy}
-        isInvolved={isCurrentUserInvolved}
+        name={item.paidBy.name}
+        isInvolved={item.isInvolved}
         isLent={isLent}
-        amount={item.amount}
-        date="Sep 23"
+        amount={totalAmount}
+        month={monthDate.month.substring(0, 3)}
+        date={monthDate.day}
+        amountTobeTransactioned={amountTobeTransactioned}
+        onClick={() => onClick(openModal)}
+      />
+    );
+
+    const renderButtonComponent = (openModal) => expenseCardComponent(openModal);
+
+    const modalContent = () => {
+      const { paidBy, splitBy, totalAmount, members } = item;
+      const isEqual = splitBy === 1;
+
+      return (
+        <View style={{ flex: 1 }}>
+          {isEditMode ? (
+            <AddExpenses
+              isEditMode={true}
+              editProps={item}
+              closeModal={() => setIsEditMode(false)}
+              getExpenseList={() => setExpenseList(user.uid, activeGroup?.id)}
+            />
+          ) : (
+            <>
+              <View style={expenseModalStyles.expense_details_container}>
+                <Text style={{ fontSize: 19, fontWeight: '800', color: COLORS.activeGreen }}>₹{totalAmount}</Text>
+                <Text>Paid by {paidBy?.name}</Text>
+                {isEqual ? <Text>₹ {totalAmount / members.length} each splitted equally</Text> : null}
+              </View>
+              <View style={expenseModalStyles.members_list}>
+                {members.map((member) => (
+                  <Text>{member.name}</Text>
+                ))}
+              </View>
+              <View style={expenseModalStyles.bottom_container}>
+                <Button
+                  containerStyle={{ width: 'auto', padding: 10 }}
+                  icon="edit"
+                  title="Edit Expense"
+                  color={COLORS.yellow}
+                  backgroundColor={COLORS.black}
+                  onPress={() => setIsEditMode(true)}
+                />
+                <TouchableOpacity onPress={() => onDelete()}>
+                  <Icon icon="delete" />
+                </TouchableOpacity>
+
+                <Button
+                  containerStyle={{ width: 'auto', padding: 10 }}
+                  icon="payment-pending"
+                  title="Payment Pending"
+                  color={COLORS.white}
+                  backgroundColor={COLORS.darkBlue}
+                  onPress={() => null}
+                />
+              </View>
+            </>
+          )}
+        </View>
+      );
+    };
+
+    return (
+      <PopUpInput
+        onClose={() => setIsEditMode(false)}
+        modalTitle="Expense Card"
+        modalContent={modalContent()}
+        height={isEditMode && 1}
+        renderButtonComponent={renderButtonComponent}
+        isHideSubmit={true}
       />
     );
   };
 
   const renderItem = ({ item }) => <Item item={item} />;
 
+  const sortedList = getUpdatedList();
+
+  sortedList.sort((a, b) => b.createdAt - a.createdAt);
+
   return (
     <>
       <FlatList
         keyExtractor={(item) => item.id}
-        data={expenseList}
+        data={sortedList}
         style={{ width: '100%', flex: 1 }}
         renderItem={renderItem}
       />
@@ -51,4 +184,32 @@ const ExpenseList = () => {
   );
 };
 
-export default ExpenseList;
+export default observer(ExpenseList);
+
+const expenseModalStyles = StyleSheet.create({
+  expense_details_container: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 5,
+    marginTop: 10,
+  },
+  members_list: {
+    display: 'flex',
+    flexDirection: 'column',
+    height: 246,
+    gap: 5,
+    marginTop: 5,
+    overflow: 'scroll',
+  },
+  bottom_container: {
+    display: 'flex',
+    flexDirection: 'row',
+    gap: 5,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  amount: {
+    fontSize: 14,
+  },
+});

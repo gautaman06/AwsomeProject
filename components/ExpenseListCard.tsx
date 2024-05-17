@@ -1,18 +1,20 @@
 import { observer } from 'mobx-react';
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, TouchableOpacity } from 'react-native';
 import { EXPENSELISTCARD_COLORS } from '../constants/Colors';
 import { convertHexToRGBA } from '../Utils/CommonUtils';
-
 import { View, Text } from './Themed';
 
 interface IEpenseListCard {
   date: string;
+  month: string;
   isLent: boolean;
   amount: number;
   isInvolved: boolean;
   name: string;
   description: string;
+  amountTobeTransactioned: number;
+  onClick: () => void;
 }
 
 /**
@@ -43,7 +45,7 @@ const updateStyles = (styles: typeof expensecardStyle, background: string, color
 };
 
 export const ExpenseListCard = (props: IEpenseListCard) => {
-  const { date, isLent, amount, isInvolved, name, description } = props;
+  const { date, isLent, amount, isInvolved, name, description, amountTobeTransactioned, month } = props;
   const styles = expensecardStyle;
   /* Updating the styles object with the new colors. */
   if (isLent) {
@@ -54,21 +56,26 @@ export const ExpenseListCard = (props: IEpenseListCard) => {
     updateStyles(styles, EXPENSELISTCARD_COLORS.BORROWED.background, EXPENSELISTCARD_COLORS.BORROWED.color);
   }
   return (
-    <View style={styles.container}>
-      <View style={styles.leftexpenseColorIndicator} />
-      <View style={styles.dateStyleContainer}>
-        <Text style={styles.dateStyle}>{date}</Text>
-      </View>
-      <View style={styles.description_type_container}>
-        <Text style={styles.description}>{description}</Text>
-        {isInvolved && <Text style={styles.paidtype}>{`${isLent ? 'you' : name} paid ₹${amount}`}</Text>}
-      </View>
-      <View style={[styles.typeContainer, styles.absolute]}>
-        <Text style={styles.paidtype}>
-          {!isInvolved ? 'you are not allowed' : `you ${isLent ? 'lent' : 'borrowed'}`}
-        </Text>
-        {isInvolved && <Text style={styles.paidtype}>{`₹${amount}`}</Text>}
-      </View>
+    <View>
+      <TouchableOpacity onPress={() => props.onClick()}>
+        <View style={styles.container}>
+          <View style={styles.leftexpenseColorIndicator} />
+          <View style={styles.dateStyleContainer}>
+            <Text style={styles.dateStyle}>{month}</Text>
+            <Text style={styles.dateStyle}>{date}</Text>
+          </View>
+          <View style={styles.description_type_container}>
+            <Text style={styles.description}>{description}</Text>
+            {isInvolved && <Text style={styles.paidtype}>{`${isLent ? 'you' : name} paid ₹${amount}`}</Text>}
+          </View>
+          <View style={[styles.typeContainer, styles.absolute]}>
+            <Text style={styles.paidtype}>
+              {!isInvolved ? 'you are not involved' : `you ${isLent ? 'lent' : 'borrowed'}`}
+            </Text>
+            {isInvolved && <Text style={styles.paidtype}>{`₹${amountTobeTransactioned}`}</Text>}
+          </View>
+        </View>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -104,16 +111,16 @@ const expensecardStyle = StyleSheet.create({
     display: 'flex',
     justifyContent: 'center',
     marginLeft: 8,
+    gap: 2,
   },
   dateStyle: {
-    height: 30,
-    width: 23,
     fontSize: 12,
     color: '',
   },
   description_type_container: {
     backgroundColor: '',
     marginLeft: 8,
+    gap: 5,
   },
   description: {
     fontSize: 14,
@@ -126,6 +133,7 @@ const expensecardStyle = StyleSheet.create({
   typeContainer: {
     backgroundColor: '',
     right: 12,
+    gap: 5,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'flex-end',

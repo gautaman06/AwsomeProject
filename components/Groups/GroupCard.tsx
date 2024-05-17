@@ -1,15 +1,14 @@
 import React from 'react';
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
-import { STATUSCODE } from '../../constants/constant';
+import { COLORS } from '../../constants/Colors';
+import { DATE_FORMAT, STATUSCODE } from '../../constants/constant';
 import { convertHexToRGBA, expochTimetoDateConvertor } from '../../Utils/CommonUtils';
-import Transaction from '../../assets/svg/transaction.svg';
-import Left from '../assets/svg/left.svg';
-
+import Icon from '../Icons/Icons';
 interface IGroupCards {
   groupdetails: {
     name: string;
     time: number;
-    status: boolean;
+    status: number;
     members: number;
     debts: boolean;
     id: string;
@@ -19,16 +18,20 @@ interface IGroupCards {
 
 export const GroupCard = (props: IGroupCards) => {
   const { name, time, status, members, debts, id } = props.groupdetails;
-  console.log('entred->', name, time, status, members, debts, id);
+
   return (
     <View style={{ width: '100%', padding: 10, borderColor: 'red' }} key={id}>
-      {/* <Text style={groupCardStyles.name}>Hello</Text> */}
       <TouchableOpacity onPress={() => props.onClick()}>
         <View style={groupCardStyles.container}>
           <View style={groupCardStyles.details}>
             <Text style={groupCardStyles.name}>{name}</Text>
-            <Text style={groupCardStyles.dateStatus}>{expochTimetoDateConvertor(time)}</Text>
-            <Text style={groupCardStyles.dateStatus}>{STATUSCODE[status ? 10 : 200]}</Text>
+            <Text style={groupCardStyles.dateStatus}>
+              {expochTimetoDateConvertor(time, DATE_FORMAT.DD_MM_YYYY_HH_MM)}
+            </Text>
+            <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 5 }}>
+              <View style={groupCardStyles.circle(status)}></View>
+              <Text style={groupCardStyles.dateStatus}>{STATUSCODE[status]}</Text>
+            </View>
           </View>
           <View style={groupCardStyles.bottomContainer}>
             <View style={groupCardStyles.memberContainer}>
@@ -36,8 +39,8 @@ export const GroupCard = (props: IGroupCards) => {
               <Text style={groupCardStyles.members}>Members</Text>
             </View>
             <View style={groupCardStyles.memberContainer}>
-              <View style={{ alignItems: 'center', justifyContent: 'center', display: 'flex' }}>
-                <Transaction stroke="#05B4FF" />
+              <View style={{ alignItems: 'center', justifyContent: 'center', display: 'flex', marginTop: 4 }}>
+                <Icon icon="transaction" svgProps={{ stroke: debts ? '#05B4FF' : '#D9D9D9' }} />
               </View>
               <Text style={groupCardStyles.simplifyDebts(debts)}>Simplify Debts</Text>
             </View>
@@ -107,5 +110,13 @@ const groupCardStyles = StyleSheet.create<any>({
     fontSize: 12,
     marginLeft: 5,
     color: isSimplifyDebts ? '#05B4FF' : '#D9D9D9',
+  }),
+  circle: (status) => ({
+    height: 10,
+    width: 10,
+    // backgroundColor: '#bbb',
+    borderRadius: 5,
+    display: 'inline-block',
+    backgroundColor: status == 200 ? COLORS.buttonGreen : COLORS.lightGrey,
   }),
 });

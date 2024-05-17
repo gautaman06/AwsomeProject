@@ -5,11 +5,14 @@ import {
   signOut,
   AuthErrorCodes,
   updateProfile,
+  signInWithPopup,
+  GoogleAuthProvider,
 } from 'firebase/auth';
 import Toast from 'react-native-toast-message';
 import { firebaseAuth } from '../firebase/firebase';
 import { addDocument } from '../firebase/QueryUtils';
 import { RootStackParamList } from '../types';
+import { formatErrorMessage } from '../Utils/CommonUtils';
 
 interface AuthEventError {
   code: string;
@@ -32,7 +35,7 @@ export default class Authentication {
           updateProfile(response.user, { displayName: username });
         }
         addDocument('users', {
-          id: response.user.uid,
+          uid: response.user.uid,
           name: response.user.displayName,
           emailId: response.user.email,
           status: 200,
@@ -93,22 +96,40 @@ export default class Authentication {
         return response;
       })
       .catch((error: AuthEventError) => {
-        if (error.code === AuthErrorCodes.INVALID_PASSWORD) {
-          Toast.show({
-            type: 'error',
-            position: 'bottom',
-            text1: `Invalid Password`,
-          });
-        }
-        if (error.code === 'auth/invalid-email') {
-          console.log('invalid email id');
-          Toast.show({
-            type: 'error',
-            position: 'bottom',
-            text1: `Invalid email`,
-          });
-        }
-        console.error(error);
+        const message = formatErrorMessage(error.code);
+        Toast.show({
+          type: 'error',
+          position: 'bottom',
+          text1: message,
+        });
+
+        // console.error(error);
+      });
+  }
+
+  googleSignIn() {
+    const provider = new GoogleAuthProvider();
+    signInWithPopup(firebaseAuth, provider)
+      .then((result) => {
+        // This gives you a Google Access Token. You can use it to access the Google API.
+        const credential = GoogleAuthProvider.credentialFromResult(result);
+        const token = credential.accessToken;
+        // The signed-in user info.
+        const user = result.user;
+
+        console.log(user);
+        // IdP data available using getAdditionalUserInfo(result)
+        // ...
+      })
+      .catch((error) => {
+        // Handle Errors here.
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        // The email of the user's account used.
+        const email = error.customData.email;
+        // The AuthCredential type that was used.
+        const credential = GoogleAuthProvider.credentialFromError(error);
+        // ...
       });
   }
 
