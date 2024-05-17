@@ -2,7 +2,7 @@ import React from 'react';
 import { Animated, StatusBar, StyleSheet, TouchableOpacity } from 'react-native';
 import { NavigationState, Route, SceneRendererProps, TabView } from 'react-native-tab-view';
 import { COLORS } from '../constants/Colors';
-import { View } from './Themed';
+import { View, Text } from './Themed';
 
 interface ITabViewComponent {
   setIsTabState: React.Dispatch<
@@ -22,10 +22,11 @@ interface ITabViewComponent {
     }[];
   };
   renderScene: ({ route, jumpTo, position }) => JSX.Element;
+  renderHeader?: () => JSX.Element;
 }
 
 const TabViewComponent = (props: ITabViewComponent) => {
-  const { setIsTabState, tabState, renderScene } = props;
+  const { setIsTabState, tabState, renderScene, renderHeader } = props;
   const handleChange = (index: number) => {
     setIsTabState({ ...tabState, index: index });
   };
@@ -34,20 +35,23 @@ const TabViewComponent = (props: ITabViewComponent) => {
     const inputRange = renderTabsProps.navigationState.routes.map((x, i) => i);
 
     return (
-      <View style={styles.tabBar}>
-        {renderTabsProps.navigationState.routes.map((route, i) => {
-          const opacity = renderTabsProps.position.interpolate({
-            inputRange,
-            outputRange: inputRange.map((inputIndex) => (inputIndex === i ? 1 : 0.5)),
-          });
+      <View>
+        {renderHeader && renderHeader()}
+        <View style={styles.tabBar}>
+          {renderTabsProps.navigationState.routes.map((route, i) => {
+            const opacity = renderTabsProps.position.interpolate({
+              inputRange,
+              outputRange: inputRange.map((inputIndex) => (inputIndex === i ? 1 : 0.5)),
+            });
 
-          return (
-            <TouchableOpacity key={i} style={styles.tabItem} onPress={() => setIsTabState({ ...tabState, index: i })}>
-              <Animated.Text style={{ opacity }}>{route?.title}</Animated.Text>
-              {tabState.index === i && <View style={styles.tabIndicator}></View>}
-            </TouchableOpacity>
-          );
-        })}
+            return (
+              <TouchableOpacity key={i} style={styles.tabItem} onPress={() => setIsTabState({ ...tabState, index: i })}>
+                <Animated.Text style={{ fontSize: 14, fontWeight: '500' }}>{route?.title}</Animated.Text>
+                {tabState.index === i && <View style={styles.tabIndicator}></View>}
+              </TouchableOpacity>
+            );
+          })}
+        </View>
       </View>
     );
   };
@@ -69,14 +73,16 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   tabBar: {
     flexDirection: 'row',
-    paddingTop: StatusBar.currentHeight,
     position: 'relative',
-    border: `1px solid ${COLORS.lightGrey}`,
+    borderBottomColor: COLORS.lightGrey,
+    borderBottomWidth: 1,
+    marginTop: 20,
   },
   tabItem: {
     flex: 1,
     alignItems: 'center',
-    padding: 16,
+    paddingHorizontal: 5,
+    paddingVertical: 16,
   },
   title: {
     fontSize: 20,

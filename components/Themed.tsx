@@ -161,6 +161,7 @@ const styles = StyleSheet.create({
     height: 40,
     alignItems: 'center',
     justifyContent: 'center',
+    gap: 5,
   },
   title: {
     color: '#fff',

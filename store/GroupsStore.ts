@@ -1,6 +1,6 @@
 import { action, makeObservable, observable, runInAction, toJS } from 'mobx';
 import { API_STATUSCODE, STATUSCODE } from '../constants/constant';
-import { getGroupsData } from '../firebase/QueryUtils';
+import { getGroupsData, getListOfUsersById } from '../firebase/QueryUtils';
 
 interface IGroups {
   category: string;
@@ -70,14 +70,46 @@ class GroupsStore {
   // }
 
   @action.bound
-  public setActiveGroup(group: any): void {
-    this.activeGroup = group;
+  public setActiveGroup(group: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.activeGroup = group;
+      this.setActiveGroupUsers(group?.users)
+        .then((response) => {
+          if (response) {
+            resolve(response);
+          }
+        })
+        .catch((err) => {
+          reject({ status: err });
+        });
+    });
   }
 
   @action.bound
-  public setActiveGroupUsers(users: any): void {
-    this.activeGroupUsers = users;
+  public setActiveGroupUsers(users: any[]): Promise<{ status: API_STATUSCODE }> {
+    let status = API_STATUSCODE.LOADING;
+    return new Promise((resolve, reject) => {
+      getListOfUsersById(users)
+        .then((data) => {
+          runInAction(() => {
+            const usersData = data;
+            this.activeGroupUsers = usersData;
+            status = API_STATUSCODE.SUCCESS;
+            resolve({ status: status });
+          });
+        })
+        .catch((err) => {
+          console.error(err);
+          status = API_STATUSCODE.FAILED;
+          reject({ status: status });
+        });
+    });
   }
+
+  // @action.bound
+  // public setActiveGroupUsers(users: any): void {
+  //   this.activeGroupUsers = users;
+  // }
 }
 const groupsStore = new GroupsStore();
 export default groupsStore;

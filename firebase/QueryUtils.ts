@@ -10,6 +10,8 @@ import {
   addDoc,
   limit,
   orderBy,
+  updateDoc,
+  deleteDoc,
 } from 'firebase/firestore';
 import { QUERY_OPERATORS } from './fireBaseConstants';
 
@@ -65,4 +67,33 @@ const getListOfUsersById = async (userIds) => {
   return data;
 };
 
-export { getGroupsData, getFirebaseDataById, getExpenseList, addDocument, getUserDetailsByEmailId, getListOfUsersById };
+const getAllUsers = async () => {
+  const db = collection(firebase, 'users');
+  const queryConditions = query(db);
+  const response = await getDocs(queryConditions);
+  const data = response.docs.map((results) => ({ ...results.data() }));
+  return data;
+};
+
+const updateDocument = async (table, id, payload) => {
+  const documentIdReference = doc(firebase, table, id);
+  await updateDoc(documentIdReference, payload);
+};
+
+const deleteDocument = async (table, id) => {
+  const documentIdReference = doc(firebase, table, id);
+
+  await deleteDoc(documentIdReference);
+};
+
+export {
+  getGroupsData,
+  getFirebaseDataById,
+  getExpenseList,
+  addDocument,
+  getUserDetailsByEmailId,
+  getListOfUsersById,
+  getAllUsers,
+  updateDocument,
+  deleteDocument,
+};

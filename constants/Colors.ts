@@ -70,5 +70,12 @@ export const COLORS = {
   green: '#0D8B21',
   pink: '#B73161',
   submitText: '#05B4FF',
+  disableText: '#B6B6B6',
   lightBlue: '#05B4FF',
+  lightGreen: '#e6ffe6',
+  buttonGreen: '#22C53C',
+  activeGreen: '#10D22F',
+  darkBlue: '#3D44EC',
+  yellow: '#FECC30',
+  darkRose: '#EB2549',
 };

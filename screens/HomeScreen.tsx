@@ -1,30 +1,25 @@
 import React, { useEffect } from 'react';
-import { Platform, SafeAreaView, StatusBar, StyleSheet, FlatList } from 'react-native';
+import { StyleSheet, FlatList } from 'react-native';
 
 // import EditScreenInfo from '../components/EditScreenInfo';
-import { View, Button, Text } from '../components/Themed';
+import { View, Button } from '../components/Themed';
 import { observer } from 'mobx-react';
 import { RootTabScreenProps } from '../types';
 import store from '../store';
-import { GroupCard } from '../components/Groups/GroupCard';
-import { toJS } from 'mobx';
-import PopUpInput from '../components/PopUpInput';
-import Vector from '../assets/svg/Vector.svg';
-import Trip from '../assets/svg/trip.svg';
-import Home from '../assets/svg/home.svg';
-import Couple from '../assets/svg/couple.svg';
 import { CreateGroup } from '../components/Groups/CreateGroup';
-import { addDocument } from '../firebase/QueryUtils';
+import { GroupCard } from '../components/Groups/GroupCard';
+import { authentication } from '../auth';
 
-export const HomeScreen = ({ navigation }: RootTabScreenProps<'TabOne'>): JSX.Element => {
+export const HomeScreen = ({ navigation }: RootTabScreenProps<'Groups'>): JSX.Element => {
   const {
-    generalStore: { user },
+    generalStore: { user, setAllUsers },
     groupsStore,
   } = store;
   const { setGroupsList, groups, setActiveGroup, activeGroup } = groupsStore;
 
   useEffect(() => {
     setGroupsList(user.uid);
+    setAllUsers();
     if (activeGroup) {
       setActiveGroup(null);
     }
@@ -37,29 +32,22 @@ export const HomeScreen = ({ navigation }: RootTabScreenProps<'TabOne'>): JSX.El
           id: item.id,
           name: item.name,
           time: item.createdAt,
-          status: item.setteledUp,
+          status: item.setteledUp ? 10 : 200,
           members: item.members,
           debts: item.debts,
         }}
         onClick={() => {
-          setActiveGroup(item);
-          navigation.navigate('Expenses');
+          setActiveGroup(item).then((response) => {
+            if (response) {
+              navigation.navigate('Expenses');
+            }
+          });
         }}
       />
     );
   };
 
   const renderItem = ({ item }) => <Item item={item} />;
-
-  const renderModalContent = () => {
-    return (
-      <>
-        <CreateGroup />
-      </>
-    );
-  };
-
-  console.log('home->', activeGroup);
 
   return (
     <View style={styles.container}>
@@ -74,7 +62,13 @@ export const HomeScreen = ({ navigation }: RootTabScreenProps<'TabOne'>): JSX.El
         renderItem={renderItem}
       />
       <CreateGroup />
-      <Button title="Expenses" onPress={() => navigation.navigate('Expenses')} />
+      <Button
+        title="Expenses"
+        onPress={
+          () => authentication.signOutUser()
+          // navigation.navigate('Expenses')
+        }
+      />
     </View>
   );
 };
