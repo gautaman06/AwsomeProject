@@ -16,7 +16,7 @@ export default function App() {
   } else {
     return (
       <SafeAreaProvider>
-        <SafeAreaView style={{ flex: 1, marginTop: StatusBar.currentHeight || 0 }}>
+        <SafeAreaView style={{ flex: 1 }}>
           <Navigation colorScheme={colorScheme} />
           <StatusBar />
           <ModalPortal />
