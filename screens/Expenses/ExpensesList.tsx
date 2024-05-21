@@ -104,6 +104,15 @@ const ExpenseList = () => {
     const modalContent = () => {
       const { paidBy, splitBy, totalAmount, members } = item;
       const isEqual = splitBy === 1;
+      console.log(item);
+
+      const onSetPaid = (value: boolean) => {
+        const { isLent, isInvolved, isCurrentUserInvolved, ...rest } = item;
+        const payload = { ...rest, isPaid: value !== null ? !value : true };
+        updateDocument('expense', item?.id, payload);
+        setExpenseList(user.uid, activeGroup?.id);
+        setIsEditMode(false);
+      };
 
       return (
         <View style={{ flex: 1 }}>
@@ -121,10 +130,15 @@ const ExpenseList = () => {
                 <Text>Paid by {paidBy?.name}</Text>
                 {isEqual ? <Text>₹ {totalAmount / members.length} each splitted equally</Text> : null}
               </View>
-              <View style={expenseModalStyles.members_list}>
-                {members.map((member) => (
-                  <Text>{member.name}</Text>
-                ))}
+              <View style={[expenseModalStyles.members_list, !isEqual ? { alignItems: 'center' } : {}]}>
+                {isEqual && members.map((member) => <Text>{member.name}</Text>)}
+                {!isEqual &&
+                  members.map((member) => (
+                    <View style={{ display: 'flex', flexDirection: 'row', gap: 5 }}>
+                      <Text style={{ width: 160 }}>{member.name}</Text>
+                      <Text style={{ color: COLORS.darkRose }}>{member.amount}</Text>
+                    </View>
+                  ))}
               </View>
               <View style={expenseModalStyles.bottom_container}>
                 <Button
@@ -141,11 +155,11 @@ const ExpenseList = () => {
 
                 <Button
                   containerStyle={{ width: 'auto', padding: 10 }}
-                  icon="payment-pending"
-                  title="Payment Pending"
+                  icon={item?.isPaid ? null : 'payment-pending'}
+                  title={item?.isPaid ? 'Payment Done' : 'Payment Pending'}
                   color={COLORS.white}
-                  backgroundColor={COLORS.darkBlue}
-                  onPress={() => null}
+                  backgroundColor={item?.isPaid ? COLORS.activeGreen : COLORS.darkBlue}
+                  onPress={() => onSetPaid(item?.isPaid)}
                 />
               </View>
             </>
@@ -172,6 +186,14 @@ const ExpenseList = () => {
 
   sortedList.sort((a, b) => b.createdAt - a.createdAt);
 
+  if (sortedList?.length < 1) {
+    return (
+      <View style={expenseModalStyles.empty_container}>
+        <Text>{`No Expenses to show :(`}</Text>
+      </View>
+    );
+  }
+
   return (
     <>
       <FlatList
@@ -197,9 +219,9 @@ const expenseModalStyles = StyleSheet.create({
   members_list: {
     display: 'flex',
     flexDirection: 'column',
-    height: 246,
-    gap: 5,
-    marginTop: 5,
+    height: 220,
+    gap: 12,
+    marginTop: 36,
     overflow: 'scroll',
   },
   bottom_container: {
@@ -211,5 +233,12 @@ const expenseModalStyles = StyleSheet.create({
   },
   amount: {
     fontSize: 14,
+  },
+  empty_container: {
+    display: 'flex',
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontWeight: '600',
   },
 });
