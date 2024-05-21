@@ -186,6 +186,14 @@ const ExpenseList = () => {
 
   sortedList.sort((a, b) => b.createdAt - a.createdAt);
 
+  if (sortedList?.length < 1) {
+    return (
+      <View style={expenseModalStyles.empty_container}>
+        <Text>{`No Expenses to show :(`}</Text>
+      </View>
+    );
+  }
+
   return (
     <>
       <FlatList
@@ -225,5 +233,12 @@ const expenseModalStyles = StyleSheet.create({
   },
   amount: {
     fontSize: 14,
+  },
+  empty_container: {
+    display: 'flex',
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontWeight: '600',
   },
 });
