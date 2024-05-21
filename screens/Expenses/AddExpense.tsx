@@ -8,8 +8,6 @@ import store from '../../store';
 import SingleSelect from '../../components/SingleSelect';
 import MultipleSelect from '../../components/MultiSelect';
 import Switch from '../../components/Switch';
-import PopUpInput from '../../components/PopUpInput';
-import { API_STATUSCODE } from '../../constants/constant';
 import Toast from 'react-native-toast-message';
 import { updateDocument } from '../../firebase/QueryUtils';
 
@@ -118,15 +116,21 @@ const AddExpenses = (props: IAddExpenseProps): JSX.Element => {
     resetValue();
   };
 
-  const seeExpenseDetails = () => {
-    return (
-      <View style={styles.expense_details_container}>
-        <Text>{totalAmount}</Text>
-        <Text>Paid by {paidBy?.value}</Text>
-        {isEqual ? <Text>{totalAmount / splitMembers.length} each splitted equally</Text> : null}
-      </View>
-    );
-  };
+  // const seeExpenseDetails = () => {
+  //   return (
+  //     <View style={styles.expense_details_container}>
+  //       <Text>{totalAmount}</Text>
+  //       <Text>Paid by {paidBy?.value}</Text>
+  //       {isEqual ? <Text>{totalAmount / splitMembers.length} each splitted equally</Text> : null}
+  //     </View>
+  //   );
+  // };
+
+  const enabled =
+    description !== '' &&
+    totalAmount !== null &&
+    paidBy !== null &&
+    (isEqual ? splitMembers.length !== 0 : splitMembers.length !== 0 && amount?.some((a) => !isNaN(a?.amount)));
 
   return (
     <View style={styles.container}>
@@ -173,6 +177,7 @@ const AddExpenses = (props: IAddExpenseProps): JSX.Element => {
           color="#FFFFFF"
           onPress={() => onSubmit()}
           backgroundColor={COLORS.buttonGreen}
+          disabled={!enabled}
         />
       </View>
       {/* <PopUpInput

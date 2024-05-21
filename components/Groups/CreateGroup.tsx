@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { COLORS } from '../../constants/Colors';
 import { API_STATUSCODE, CATEGORY_LIST } from '../../constants/constant';

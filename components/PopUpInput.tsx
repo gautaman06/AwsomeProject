@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { BottomModal, ModalContent } from 'react-native-modals';
 import { COLORS } from '../constants/Colors';
-import ButtonComponent from './ButtonComponent';
 import Icon from './Icons/Icons';
 import { Button } from './Themed';
 
@@ -26,12 +25,11 @@ const PopUpInput = (props: IPopUpInputProps) => {
     modalContent = null,
     buttonTitle,
     onSubmitClick,
-    closeTimeout,
     reset,
     disableSubmit,
     renderButtonComponent = null,
     height,
-    onClose,
+    onClose = null,
     isHideSubmit = false,
   } = props;
 
@@ -39,7 +37,7 @@ const PopUpInput = (props: IPopUpInputProps) => {
 
   const onModalClose = () => {
     setIsVisible(false);
-    onClose();
+    onClose && onClose();
   };
   const openModal = () => setIsVisible(true);
 
